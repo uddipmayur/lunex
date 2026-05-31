@@ -1,0 +1,218 @@
+<UserControl x:Class="Lunex.Views.StatsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:components="clr-namespace:Lunex.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <UserControl.Resources>
+        <!-- Slide-in from left and fade-in loaded transition -->
+        <Storyboard x:Key="OnLoadedStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                             From="-40" To="0" Duration="0:0:0.4" DecelerationRatio="0.8"/>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.35"/>
+        </Storyboard>
+
+        <!-- Custom Premium ProgressBar template for hardware loads -->
+        <Style x:Key="GlowingProgressStyle" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#11FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="TemplateRoot">
+                            <Border x:Name="PART_Track" CornerRadius="3" Background="{TemplateBinding Background}"/>
+                            <Border x:Name="PART_Indicator" CornerRadius="3" HorizontalAlignment="Left" Background="{TemplateBinding Foreground}">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="{Binding Foreground.Color, RelativeSource={RelativeSource TemplatedParent}}" BlurRadius="8" Opacity="0.5" ShadowDepth="0"/>
+                                </Border.Effect>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <UserControl.RenderTransform>
+        <TranslateTransform X="-40"/>
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource OnLoadedStoryboard}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid Background="Transparent">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Vertical" Margin="32,24,32,48">
+                
+                <!-- 1. Header Bar -->
+                <StackPanel Orientation="Vertical" Margin="0,0,0,32">
+                    <TextBlock Text="Shell Diagnostics" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
+                    <TextBlock Text="REAL-TIME SYSTEM STATS &amp; PLAYTIME TELEMETRY" Foreground="#4CC3C0FF" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- 2. Core Summary Row Cards -->
+                <Grid Margin="0,0,0,24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Card 0: Playtime -->
+                    <components:GlassPanel Grid.Column="0" CornerRadius="16" Padding="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="TOTAL PLAYTIME" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold" />
+                                <TextBlock Text="{Binding TotalPlaytime}" Foreground="White" FontSize="22" FontWeight="Black" Margin="0,8,0,2"/>
+                                <TextBlock Text="Active launcher logs" Foreground="#4DC7C4D8" FontSize="11"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="#14C3C0FF" BorderBrush="#26C3C0FF" BorderThickness="1" Padding="10" VerticalAlignment="Center">
+                                <Path Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.3 14.7L11 12.4V7h1.5v4.9l3.7 2.2-.7 1.2z" Fill="#C3C0FF" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                    </components:GlassPanel>
+
+                    <!-- Card 1: Integrated Files -->
+                    <components:GlassPanel Grid.Column="2" CornerRadius="16" Padding="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="INTEGRATED FILES" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold" />
+                                <TextBlock Text="{Binding IntegratedGamesCount}" Foreground="White" FontSize="22" FontWeight="Black" Margin="0,8,0,2"/>
+                                <TextBlock Text="Custom shell executables" Foreground="#4DC7C4D8" FontSize="11"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="#14DDB8FF" BorderBrush="#26DDB8FF" BorderThickness="1" Padding="10" VerticalAlignment="Center">
+                                <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2z" Fill="#DDB8FF" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                    </components:GlassPanel>
+
+                    <!-- Card 2: Chief Executable -->
+                    <components:GlassPanel Grid.Column="4" CornerRadius="16" Padding="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="CHIEF EXECUTABLE" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold" />
+                                <TextBlock Text="{Binding MostPlayedGameTitle}" Foreground="White" FontSize="22" FontWeight="Black" Margin="0,8,0,2" TextTrimming="CharacterEllipsis" MaxWidth="150"/>
+                                <TextBlock Text="Highest playtime record" Foreground="#4DC7C4D8" FontSize="11"/>
+                            </StackPanel>
+                            <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="#144EDEA3" BorderBrush="#264EDEA3" BorderThickness="1" Padding="10" VerticalAlignment="Center">
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" Fill="#4EDEA3" Stretch="Uniform"/>
+                            </Border>
+                        </Grid>
+                    </components:GlassPanel>
+                </Grid>
+
+                <!-- 3. Bento Grid: Hardware Status & Storage -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="5*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column: CPU/RAM & Latency -->
+                    <components:GlassPanel Grid.Column="0" CornerRadius="16" Padding="20">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="HARDWARE CORE STATUS" Foreground="#66C7C4D8" FontSize="9" FontWeight="Bold"  Margin="0,0,0,24"/>
+
+                            <!-- Processor Load -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,20">
+                                <Grid>
+                                    <TextBlock Text="PROCESSOR CORE LOAD (MOCKED)" Foreground="#B3FFFFFF" FontSize="8.5"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding CpuLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ProgressBar Value="{Binding CpuLoad}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                            </StackPanel>
+
+                            <!-- RAM Load -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,28">
+                                <Grid>
+                                    <TextBlock Text="PHYSICAL SYSTEM RAM" Foreground="#B3FFFFFF" FontSize="8.5"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding RamLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource SecondaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource SecondaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ProgressBar Value="{Binding RamLoad}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource SecondaryBrush}" Margin="0,8,0,0"/>
+                            </StackPanel>
+
+                            <!-- Latency Sparkline -->
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="LATENCY LATITUDE" Foreground="#4DC7C4D8" FontSize="8.5"/>
+                                    <TextBlock Text="{Binding Latency, StringFormat='{}{0} ms'}" Foreground="#4EDEA3" FontSize="16" FontWeight="Bold" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- Horizontal Sparkline vector -->
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding LatencySparkline}" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Height="36"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <!-- Vertical bars sparkline -->
+                                            <Border Width="8" Height="{Binding}" Background="#4D4EDEA3" CornerRadius="1" Margin="2,0,2,0" VerticalAlignment="Bottom"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </StackPanel>
+                    </components:GlassPanel>
+
+                    <!-- Right Column: Disk Storage Information -->
+                    <components:GlassPanel Grid.Column="2" CornerRadius="16" Padding="20">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="PHYSICAL STORAGE TELEMETRY" Foreground="#66C7C4D8" FontSize="9" FontWeight="Bold"  Margin="0,0,0,24"/>
+
+                            <!-- Active Disk Space Details -->
+                            <TextBlock Text="{Binding DiskDriveName}" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding DiskSpaceText}" Foreground="#7FC7C4D8" FontSize="12.5" Margin="0,4,0,24"/>
+
+                            <!-- Storage Bar Indicator -->
+                            <StackPanel Orientation="Vertical">
+                                <Grid>
+                                    <TextBlock Text="STORAGE OCCUPIED" Foreground="#B3FFFFFF" FontSize="8.5"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding DiskUsagePercentage, StringFormat='{}{0:F0}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ProgressBar Value="{Binding DiskUsagePercentage}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </components:GlassPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

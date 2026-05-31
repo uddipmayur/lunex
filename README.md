@@ -34,13 +34,23 @@ Authorized developers can compile and package the application using the built-in
 
 1.  **Prerequisites**:
     *   .NET 9.0 SDK
-    *   Inno Setup 6 (for packaging the installer)
-    *   Windows SDK (containing `signtool.exe` for code signing)
 
 
-## License & Repository Status
+## License
 
-This repository is **proprietary and private**. It is not open source. 
+This project is licensed under the **MIT License** 
 
-*   All rights reserved to the original authors.
-*   Unauthorized copying, modification, distribution, or reverse-engineering of any code or assets in this repository is strictly prohibited.
+Copyright (c) 2026 **Nexus Realm**. All rights reserved.
+
+---
+
+## Security & Secrets Management
+
+To keep this repository secure before pushing to GitHub, the following measures are active:
+
+1. **Git Exclusions (.gitignore)**: A `.gitignore` file is configured in the root directory to prevent local build artifacts (`bin/`, `obj/`), IDE state/settings (`.vs/`, `.vscode/`, `*.user`), and temporary files from being tracked or pushed.
+2. **Local Settings Storage**: All local user configurations, custom game libraries, and profile databases (`lunex_settings.json`, `lunex_profile.json`, `lunex_games.json`) are stored dynamically in the user's `%APPDATA%\Lunex` folder. They are completely decoupled from the project codebase and will not be pushed to GitHub.
+3. **API Keys and Public Tokens**:
+    * The Supabase credentials located in [UpdateService.cs] use the public anonymous (`anon`) role key. This token is designed to be client-side facing and is safe to commit.
+    * **WARNING**: Never replace this with a Supabase `service_role` or admin key, or commit any other private secrets. Always verify code changes for raw credentials before pushing.
+

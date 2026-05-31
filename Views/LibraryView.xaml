@@ -1,0 +1,128 @@
+<UserControl x:Class="Lunex.Views.LibraryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:components="clr-namespace:Lunex.Components"
+             xmlns:vm="clr-namespace:Lunex.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!-- Slide-in from left and fade-in loaded transition -->
+        <Storyboard x:Key="OnLoadedStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                             From="-40" To="0" Duration="0:0:0.4" DecelerationRatio="0.8"/>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.35"/>
+        </Storyboard>
+
+        <!-- Empty State Visibility Trigger -->
+        <Style x:Key="EmptyStatePanelStyle" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLibraryEmpty}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Grid Visibility Trigger -->
+        <Style x:Key="LibraryGridPanelStyle" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLibraryEmpty}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <UserControl.RenderTransform>
+        <TranslateTransform X="-40"/>
+    </UserControl.RenderTransform>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource OnLoadedStoryboard}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <!-- Top Controls Row -->
+            <RowDefinition Height="Auto"/>
+            <!-- Main Content Cards Row -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Header & Filter Controls Bar -->
+        <Grid Grid.Row="0" Margin="32,24,32,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Library Text Brand Info -->
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="Library" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
+                <TextBlock Text="Non-Steam game integrations" Foreground="#66C7C4D8" FontSize="12" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Sorting, Filtering, and Add CTA button -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- Sort Dropdown Button -->
+                <ComboBox x:Name="SortCombo" Width="155" Height="36" Margin="0,0,16,0"
+                          SelectedValue="{Binding ActiveOption}"
+                          SelectedValuePath="Tag"
+                          Background="#19FFFFFF" Foreground="White" BorderBrush="#1CFFFFFF" BorderThickness="1">
+                    <ComboBoxItem Content="recently played" Tag="{x:Static vm:LibrarySortOption.RecentlyPlayed}"/>
+                    <ComboBoxItem Content="All games" Tag="{x:Static vm:LibrarySortOption.All}"/>
+                    <ComboBoxItem Content="most played" Tag="{x:Static vm:LibrarySortOption.MostPlayed}"/>
+                </ComboBox>
+
+                <!-- ADD GAME CTA Button -->
+                <Button Command="{Binding AddGameCommand}" Height="36" Padding="16,0"
+                        Style="{StaticResource NeonButtonStyle}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="ADD GAME" Margin="8,0,0,0" FontSize="11" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main Content Grid Scroll Panel -->
+        <ScrollViewer Grid.Row="1" Margin="24,12,24,24" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Style="{StaticResource LibraryGridPanelStyle}">
+            <!-- Cards Grid -->
+            <Grid>
+                <ItemsControl ItemsSource="{Binding FilteredGames}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="300" Margin="8"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <components:GameCard Margin="8" Width="284" Height="284"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Empty State -->
+        <StackPanel Grid.Row="1" Style="{StaticResource EmptyStatePanelStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-60,0,0">
+            <Border Width="80" Height="80" CornerRadius="40" Background="#14C3C0FF" BorderBrush="#26C3C0FF" BorderThickness="1">
+                <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2z" 
+                      Fill="#C3C0FF" Width="40" Height="40" Stretch="Uniform"/>
+            </Border>
+            <TextBlock Text="YOUR LIBRARY IS EMPTY" Foreground="#C3C0FF" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,24,0,0" />
+            <TextBlock Text="Integrate custom applications directly into your Lunex Shell." Foreground="#7FC7C4D8" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,24" TextAlignment="Center" MaxWidth="380"/>
+            <Button Command="{Binding AddGameCommand}" Padding="24,12" HorizontalAlignment="Center"
+                    Style="{StaticResource NeonButtonStyle}">
+                <TextBlock Text="ADD YOUR FIRST GAME" FontSize="11" FontWeight="Bold" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

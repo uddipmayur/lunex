@@ -1,0 +1,665 @@
+<UserControl x:Class="Lunex.Views.MusicView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:components="clr-namespace:Lunex.Components"
+             xmlns:vm="clr-namespace:Lunex.ViewModels"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <UserControl.Resources>
+        <!-- Staggered Card Load Animations -->
+        <Storyboard x:Key="OnLoadedStoryboard">
+            <!-- Card 1: Player Controller Card -->
+            <DoubleAnimation Storyboard.TargetName="PlayerCard" Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.0"/>
+            <DoubleAnimation Storyboard.TargetName="PlayerCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                             From="35" To="0" Duration="0:0:0.4" BeginTime="0:0:0.0" DecelerationRatio="0.8"/>
+
+            <!-- Card 2: Equalizer Visualizer Card -->
+            <DoubleAnimation Storyboard.TargetName="EqualizerCard" Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.18"/>
+            <DoubleAnimation Storyboard.TargetName="EqualizerCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                             From="35" To="0" Duration="0:0:0.4" BeginTime="0:0:0.18" DecelerationRatio="0.8"/>
+
+            <!-- Card 3: Right Playlist Card -->
+            <DoubleAnimation Storyboard.TargetName="PlaylistCard" Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.4" BeginTime="0:0:0.36"/>
+            <DoubleAnimation Storyboard.TargetName="PlaylistCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                             From="35" To="0" Duration="0:0:0.4" BeginTime="0:0:0.36" DecelerationRatio="0.8"/>
+        </Storyboard>
+
+        <!-- Premium ListViewItem Card Style -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="ItemBorder" 
+                                CornerRadius="8" 
+                                Padding="12" 
+                                Background="#08FFFFFF" 
+                                BorderBrush="#0BFFFFFF" 
+                                BorderThickness="1" 
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#1AFFFFFF"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#40C3C0FF"/>
+                                <Setter TargetName="ItemBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#C3C0FF" BlurRadius="8" Opacity="0.15" ShadowDepth="0"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#334F46E5"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#80C3C0FF"/>
+                                <Setter TargetName="ItemBorder" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#4F46E5" BlurRadius="12" Opacity="0.3" ShadowDepth="0"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Visibility togglers based on source selection -->
+        <Style x:Key="LocalPlayerPanelStyle" TargetType="Grid">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLocalActive}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="WebPlayerPanelStyle" TargetType="Grid">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsWebActive}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource OnLoadedStoryboard}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <!-- Top Header Bar -->
+            <RowDefinition Height="Auto"/>
+            <!-- Main Content Area -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Header & Dropdown Row -->
+        <Grid Grid.Row="0" Margin="32,24,32,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Title Brand -->
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="Sound Shell" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
+                <TextBlock Text="NEURAL LOCAL AUDIOS &amp; WEB WEB ORBITS" Foreground="#4CC3C0FF" FontSize="8.5" FontWeight="Bold"  Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <!-- Custom Source Combobox Selector -->
+            <ComboBox Grid.Column="1" Width="160" Height="36" VerticalAlignment="Center"
+                      SelectedValue="{Binding ActiveSource}"
+                      SelectedValuePath="Tag"
+                      Background="#19FFFFFF" Foreground="White" BorderBrush="#1CFFFFFF" BorderThickness="1">
+                <ComboBoxItem Content="Songs Folder" Tag="{x:Static vm:MusicSource.Local}"/>
+                <ComboBoxItem Content="Spotify Web" Tag="{x:Static vm:MusicSource.Spotify}"/>
+                <ComboBoxItem Content="YT Music" Tag="{x:Static vm:MusicSource.YtMusic}"/>
+                <ComboBoxItem Content="YouTube" Tag="{x:Static vm:MusicSource.Yt}"/>
+            </ComboBox>
+        </Grid>
+
+        <!-- Main Body layouts -->
+        <Grid Grid.Row="1" Margin="32,12,32,32">
+            
+            <!-- A. LOCAL AUDIO PLAYER INTERFACE -->
+            <Grid Style="{StaticResource LocalPlayerPanelStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="4*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Player, Equalizer and Audio Stream Details -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/> <!-- Player Controller Card -->
+                        <RowDefinition Height="16"/>
+                        <RowDefinition Height="*"/>    <!-- Equalizer Visualizer Panel -->
+                    </Grid.RowDefinitions>
+
+                    <!-- Player Controller Card -->
+                    <components:GlassPanel x:Name="PlayerCard" Grid.Row="0" CornerRadius="16" Padding="24" Opacity="0">
+                        <components:GlassPanel.RenderTransform>
+                            <TranslateTransform Y="35"/>
+                        </components:GlassPanel.RenderTransform>
+                        <StackPanel Orientation="Vertical">
+                            <!-- Track Details -->
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Glowing CD/Album Placeholder Decal -->
+                                <Border Width="100" Height="100" CornerRadius="12">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#4F46E5" Offset="0"/>
+                                            <GradientStop Color="#7C03D3" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#4F46E5" BlurRadius="12" Opacity="0.3" ShadowDepth="0"/>
+                                    </Border.Effect>
+                                    <Path Data="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" 
+                                          Fill="White" Width="36" Height="36" Stretch="Uniform"/>
+                                </Border>
+                                
+                                <StackPanel Margin="24,0,0,0" VerticalAlignment="Center">
+                                    <Border BorderBrush="#26C3C0FF" BorderThickness="1" CornerRadius="4" Background="#14C3C0FF" Padding="6,2" HorizontalAlignment="Left">
+                                        <TextBlock Text="LOCAL FREQUENCY" Foreground="#C3C0FF" FontSize="8" FontWeight="Bold" />
+                                    </Border>
+                                    <TextBlock Text="{Binding ActiveTrackTitle}" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,10,0,2" MaxWidth="280" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="Decoded local binary stream" Foreground="#66C7C4D8" FontSize="12"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Seeker Bar Slider -->
+                            <Grid Margin="0,20,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding FormattedCurrentTime}" Foreground="#4DC7C4D8" FontSize="10" VerticalAlignment="Center"/>
+                                <Slider Grid.Column="1" Margin="8,0" Minimum="0" Maximum="{Binding DurationSeconds}" Value="{Binding CurrentSeconds, Mode=TwoWay}"
+                                        Background="#11FFFFFF" Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="{Binding FormattedDurationTime}" Foreground="#4DC7C4D8" FontSize="10" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Controls buttons row -->
+                            <Grid Margin="0,16,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Volume Slider -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Path Data="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" Fill="#66C7C4D8" Width="14" Height="14" Stretch="Uniform"/>
+                                    <Slider Width="80" Margin="8,0,0,0" Minimum="0" Maximum="1.0" Value="{Binding Volume}" Background="#11FFFFFF" Foreground="White" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Playback triggers Buttons -->
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Command="{Binding PrevTrackCommand}" Width="36" Height="36" Cursor="Hand" Background="Transparent" BorderThickness="0" Margin="0,0,8,0">
+                                        <Path Data="M6 6h2v12H6zm3.5 6l8.5 6V6z" Fill="White" Width="16" Height="16" Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- Main Pulsing Play button circle -->
+                                    <Button Command="{Binding TogglePlayCommand}" Width="48" Height="48" Cursor="Hand" Background="#4F46E5" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border CornerRadius="24" Background="{TemplateBinding Background}">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Color="#4F46E5" BlurRadius="10" Opacity="0.4" ShadowDepth="0"/>
+                                                    </Border.Effect>
+                                                    <Grid>
+                                                        <!-- Play state icon -->
+                                                        <Path Data="M8 5v14l11-7z" Fill="White" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <Path.Style>
+                                                                <Style TargetType="Path">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Path.Style>
+                                                        </Path>
+                                                        <!-- Pause state icon -->
+                                                        <Path Data="M6 19h4V5H6v14zm8-14v14h4V5h-4z" Fill="White" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                            <Path.Style>
+                                                                <Style TargetType="Path">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Path.Style>
+                                                        </Path>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+
+                                    <Button Command="{Binding NextTrackCommand}" Width="36" Height="36" Cursor="Hand" Background="Transparent" BorderThickness="0" Margin="8,0,0,0">
+                                        <Path Data="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" Fill="White" Width="16" Height="16" Stretch="Uniform"/>
+                                    </Button>
+                                </StackPanel>
+
+                            </Grid>
+                        </StackPanel>
+                    </components:GlassPanel>
+
+                    <!-- Equalizer Visualizer Panel -->
+                    <Border x:Name="EqualizerCard" Style="{StaticResource GlassPanelStyle}" Grid.Row="2" CornerRadius="16" Padding="20" Opacity="0">
+                        <Border.RenderTransform>
+                            <TranslateTransform Y="35"/>
+                        </Border.RenderTransform>
+                        <Grid>
+                            <TextBlock Text="FREQUENCY DYNAMICS" Foreground="#4DC7C4D8" FontSize="9" FontWeight="Bold"  VerticalAlignment="Top"/>
+                            <!-- 32-Bar Equalizer Chart Area -->
+                            <UniformGrid x:Name="EqGrid" Rows="1" Columns="32" Height="140" VerticalAlignment="Bottom" Margin="0,24,0,0">
+                                <!-- Code behind dynamically populates / controls these columns -->
+                            </UniformGrid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Audio Stream Details Card -->
+
+                </Grid>
+
+                <!-- Right Column: Songs Playlist Folder -->
+                <Border x:Name="PlaylistCard" Style="{StaticResource GlassPanelStyle}" Grid.Column="2" CornerRadius="16" Padding="20" Opacity="0">
+                    <Border.RenderTransform>
+                        <TranslateTransform X="35"/>
+                    </Border.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Rescan Bar -->
+                        <Grid Grid.Row="0" Margin="0,0,0,16">
+                            <TextBlock Text="GRID AUDIOS" Foreground="#4DC7C4D8" FontSize="9" FontWeight="Bold"  VerticalAlignment="Center"/>
+                            <Button Command="{Binding RescanCommand}" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right" Cursor="Hand">
+                                <Path Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" 
+                                      Fill="White" Width="14" Height="14" Stretch="Uniform"/>
+                            </Button>
+                        </Grid>
+
+                        <!-- Empty state songs or ListView list -->
+                        <Grid Grid.Row="1">
+                            <!-- Empty Local Files -->
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="PlaylistEmptyPanel">
+                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" 
+                                      Fill="#19FFFFFF" Width="40" Height="40" Stretch="Uniform" HorizontalAlignment="Center"/>
+                                <TextBlock Text="No local audio files detected." Foreground="#66C7C4D8" FontSize="12.5" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,16,0,8" TextAlignment="Center"/>
+                                <TextBlock Text="Place audio files inside the 'songs' directory and rescan." Foreground="#33C7C4D8" FontSize="9.5" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="180"/>
+                            </StackPanel>
+
+                             <!-- Local Files ListView -->
+                             <ListView x:Name="SongsList" Background="Transparent" BorderThickness="0" Foreground="White"
+                                       ItemsSource="{Binding LocalSongs}" SelectionMode="Single"
+                                       MouseDoubleClick="PlaySelectedSong" d:Visibility="Collapsed"
+                                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                 <ListView.ItemTemplate>
+                                     <DataTemplate>
+                                         <Grid>
+                                             <Grid.ColumnDefinitions>
+                                                 <ColumnDefinition Width="Auto"/>
+                                                 <ColumnDefinition Width="*"/>
+                                                 <ColumnDefinition Width="Auto"/>
+                                             </Grid.ColumnDefinitions>
+                                             <Border Grid.Column="0" Width="36" Height="36" CornerRadius="6" Background="#19FFFFFF" Padding="8">
+                                                 <!-- Note sign -->
+                                                 <Path Data="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" 
+                                                       Fill="White" Stretch="Uniform"/>
+                                             </Border>
+                                             <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
+                                                 <TextBlock Text="{Binding}" Foreground="White" FontSize="13" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                                                 <TextBlock Text="Local File" Foreground="#4DC7C4D8" FontSize="11" Margin="0,2,0,0"/>
+                                             </StackPanel>
+                                             <!-- Play Icon arrow -->
+                                             <Path Grid.Column="2" Data="M8 5v14l11-7z" Fill="#4DC7C4D8" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                                         </Grid>
+                                     </DataTemplate>
+                                 </ListView.ItemTemplate>
+                             </ListView>
+                        </Grid>
+
+                        <!-- Bottom open directory folder button -->
+                        <Button Grid.Row="2" Command="{Binding OpenSongsFolderCommand}" Height="44" Padding="16,0" Margin="0,16,0,0"
+                                Style="{StaticResource NeonButtonStyle}">
+                            <StackPanel Orientation="Horizontal">
+                                <Path Data="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" Fill="White" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
+                                <TextBlock Text="Open Songs Folder" Margin="8,0,0,0" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- B. WEB PLAYER PANEL (WebView2 embedded) -->
+            <Grid Style="{StaticResource WebPlayerPanelStyle}" x:Name="WebGridPanel" Margin="-16,-12,-16,-16">
+                <Grid>
+                    <!-- The actual WebView2 browser -->
+                    <wv2:WebView2 x:Name="WebBrowser"/>
+
+                    <!-- Loading overlay — shown while WebView2 navigates/loads -->
+                    <Border x:Name="WebLoadingOverlay"
+                            Background="#D90D0D1A"
+                            Visibility="Collapsed">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                             <!-- Vector Loader & Logo scaled using Viewbox -->
+                             <Viewbox Width="90" Height="90" HorizontalAlignment="Center" Margin="0,0,0,20">
+                                 <Grid Width="200" Height="200">
+                                     <!-- Track ring (subtle background circle) -->
+                                     <Ellipse Width="160" Height="160" StrokeThickness="3" Stroke="#11C3C0FF"/>
+
+                                     <!-- Rotating glow arc -->
+                                     <Path x:Name="SpinnerArc" Width="160" Height="160" 
+                                           Data="M 30 130 A 70 70 0 1 1 130 130"
+                                           StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                         <Path.RenderTransform>
+                                             <RotateTransform x:Name="SpinnerRotate" CenterX="80" CenterY="80" Angle="0"/>
+                                         </Path.RenderTransform>
+                                         <Path.Style>
+                                             <Style TargetType="Path">
+                                                 <!-- Default: cyber gradient/indigo -->
+                                                 <Setter Property="Stroke">
+                                                     <Setter.Value>
+                                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                             <GradientStop Color="#4F46E5" Offset="0.0" />
+                                                             <GradientStop Color="#7C03D3" Offset="0.5" />
+                                                             <GradientStop Color="Transparent" Offset="1.0" />
+                                                         </LinearGradientBrush>
+                                                     </Setter.Value>
+                                                 </Setter>
+                                                 <Style.Triggers>
+                                                     <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                         <Setter Property="Stroke">
+                                                             <Setter.Value>
+                                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                     <GradientStop Color="#1ED760" Offset="0.0" />
+                                                                     <GradientStop Color="#0D9A3F" Offset="0.5" />
+                                                                     <GradientStop Color="Transparent" Offset="1.0" />
+                                                                 </LinearGradientBrush>
+                                                             </Setter.Value>
+                                                         </Setter>
+                                                     </DataTrigger>
+                                                     <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                         <Setter Property="Stroke">
+                                                             <Setter.Value>
+                                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                     <GradientStop Color="#FF3B30" Offset="0.0" />
+                                                                     <GradientStop Color="#B31F1F" Offset="0.5" />
+                                                                     <GradientStop Color="Transparent" Offset="1.0" />
+                                                                 </LinearGradientBrush>
+                                                             </Setter.Value>
+                                                         </Setter>
+                                                     </DataTrigger>
+                                                     <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                         <Setter Property="Stroke">
+                                                             <Setter.Value>
+                                                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                     <GradientStop Color="#FF3B30" Offset="0.0" />
+                                                                     <GradientStop Color="#B31F1F" Offset="0.5" />
+                                                                     <GradientStop Color="Transparent" Offset="1.0" />
+                                                                 </LinearGradientBrush>
+                                                             </Setter.Value>
+                                                         </Setter>
+                                                     </DataTrigger>
+                                                 </Style.Triggers>
+                                             </Style>
+                                         </Path.Style>
+                                     </Path>
+
+                                     <!-- Hexagonal Procedural Emblem (Logo) -->
+                                     <Grid Width="90" Height="90" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                         <!-- Glowing Background Shadow -->
+                                         <Border CornerRadius="45">
+                                             <Border.Style>
+                                                 <Style TargetType="Border">
+                                                     <Setter Property="Background" Value="#14C3C0FF"/>
+                                                     <Setter Property="Effect">
+                                                         <Setter.Value>
+                                                             <DropShadowEffect Color="#C3C0FF" BlurRadius="25" Opacity="0.2"/>
+                                                         </Setter.Value>
+                                                     </Setter>
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                             <Setter Property="Background" Value="#141ED760"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#1ED760" BlurRadius="25" Opacity="0.2"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                             <Setter Property="Background" Value="#14FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="25" Opacity="0.2"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                             <Setter Property="Background" Value="#14FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="25" Opacity="0.2"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </Border.Style>
+                                         </Border>
+
+                                         <!-- Outer Hexagon -->
+                                         <Polygon Points="45,0 84,22.5 84,67.5 45,90 6,67.5 6,22.5" StrokeThickness="2.5" Fill="Transparent">
+                                             <Polygon.Style>
+                                                 <Style TargetType="Polygon">
+                                                     <Setter Property="Stroke" Value="#40C3C0FF"/>
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                             <Setter Property="Stroke" Value="#401ED760"/>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                             <Setter Property="Stroke" Value="#40FF3B30"/>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                             <Setter Property="Stroke" Value="#40FF3B30"/>
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </Polygon.Style>
+                                         </Polygon>
+
+                                         <!-- Letter N Futuristic Path -->
+                                         <Path Data="M 32,60 V 30 L 58,60 V 30" 
+                                               StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                               StrokeThickness="5" Margin="0,0,0,0">
+                                             <Path.Effect>
+                                                 <DropShadowEffect Color="#C3C0FF" BlurRadius="6" Opacity="0.6" ShadowDepth="0"/>
+                                             </Path.Effect>
+                                             <Path.Style>
+                                                 <Style TargetType="Path">
+                                                     <Setter Property="Stroke">
+                                                         <Setter.Value>
+                                                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                 <GradientStop Color="#C3C0FF" Offset="0.0"/>
+                                                                 <GradientStop Color="#DDB8FF" Offset="1.0"/>
+                                                             </LinearGradientBrush>
+                                                         </Setter.Value>
+                                                     </Setter>
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                             <Setter Property="Stroke">
+                                                                 <Setter.Value>
+                                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                         <GradientStop Color="#1ED760" Offset="0.0"/>
+                                                                         <GradientStop Color="#A3FFC2" Offset="1.0"/>
+                                                                     </LinearGradientBrush>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                             <Setter Property="Stroke">
+                                                                 <Setter.Value>
+                                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                         <GradientStop Color="#FF3B30" Offset="0.0"/>
+                                                                         <GradientStop Color="#FFB2AE" Offset="1.0"/>
+                                                                     </LinearGradientBrush>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                             <Setter Property="Stroke">
+                                                                 <Setter.Value>
+                                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                                         <GradientStop Color="#FF3B30" Offset="0.0"/>
+                                                                         <GradientStop Color="#FFB2AE" Offset="1.0"/>
+                                                                     </LinearGradientBrush>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </Path.Style>
+                                         </Path>
+
+                                         <!-- Small vertex neon glowing dots -->
+                                         <Ellipse Width="6" Height="6" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="29,27,0,0">
+                                             <Ellipse.Style>
+                                                 <Style TargetType="Ellipse">
+                                                     <Setter Property="Fill" Value="#4EDEA3"/>
+                                                     <Setter Property="Effect">
+                                                         <Setter.Value>
+                                                             <DropShadowEffect Color="#4EDEA3" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                         </Setter.Value>
+                                                     </Setter>
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                             <Setter Property="Fill" Value="#1ED760"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#1ED760" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                             <Setter Property="Fill" Value="#FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                             <Setter Property="Fill" Value="#FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </Ellipse.Style>
+                                         </Ellipse>
+                                         <Ellipse Width="6" Height="6" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,29,27">
+                                             <Ellipse.Style>
+                                                 <Style TargetType="Ellipse">
+                                                     <Setter Property="Fill" Value="#4EDEA3"/>
+                                                     <Setter Property="Effect">
+                                                         <Setter.Value>
+                                                             <DropShadowEffect Color="#4EDEA3" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                         </Setter.Value>
+                                                     </Setter>
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                             <Setter Property="Fill" Value="#1ED760"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#1ED760" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                             <Setter Property="Fill" Value="#FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                             <Setter Property="Fill" Value="#FF3B30"/>
+                                                             <Setter Property="Effect">
+                                                                 <Setter.Value>
+                                                                     <DropShadowEffect Color="#FF3B30" BlurRadius="8" Opacity="0.8" ShadowDepth="0"/>
+                                                                 </Setter.Value>
+                                                             </Setter>
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </Ellipse.Style>
+                                         </Ellipse>
+                                     </Grid>
+                                 </Grid>
+                             </Viewbox>
+
+                            <!-- Platform label -->
+                            <TextBlock HorizontalAlignment="Center" FontSize="11" FontWeight="SemiBold" Opacity="0.75">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="Loading…"/>
+                                        <Setter Property="Foreground" Value="#C3C0FF"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Spotify}">
+                                                <Setter Property="Text" Value="Loading Spotify…"/>
+                                                <Setter Property="Foreground" Value="#1ED760"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.YtMusic}">
+                                                <Setter Property="Text" Value="Loading YouTube Music…"/>
+                                                <Setter Property="Foreground" Value="#FF3B30"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ActiveSource}" Value="{x:Static vm:MusicSource.Yt}">
+                                                <Setter Property="Text" Value="Loading YouTube…"/>
+                                                <Setter Property="Foreground" Value="#FF3B30"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
