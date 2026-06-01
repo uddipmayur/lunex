@@ -17,6 +17,7 @@ x86/
 bbin/
 bin/
 obj/
+installer_output/
 [Bb]in/
 [Oo]bj/
 [Log]/
@@ -39,3 +40,10 @@ obj/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+
+#Others
+
+*.ps1
+*.pfx
+*.iss

@@ -33,7 +33,7 @@ namespace Lunex.Services
         private const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuaW55aW1zaXNkcm1ubmJreGV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMTcxNjgsImV4cCI6MjA5NTY5MzE2OH0.njFZe7fjhvyIOubezn-xFNlIGfTUYXgC5V1hEOGfsBA";
         private const string TableEndpoint = "/rest/v1/app_updates?select=*&order=id.desc&limit=1";
 
-        public const string CurrentVersion = "6.2.8";
+        public const string CurrentVersion = "7.3.6";
 
         // Single instance of updater so we don't spam database connections
         private static readonly Lazy<UpdateService> _instance = new(() => new UpdateService());
