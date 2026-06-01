@@ -86,7 +86,7 @@ namespace Lunex.ViewModels
         {
             _allGames = _libraryService.LoadGames();
             _installedIds = await _libraryService.GetInstalledGameIdsAsync(_allGames);
-            ApplyFiltersAndSort();
+            System.Windows.Application.Current.Dispatcher.Invoke(ApplyFiltersAndSort);
         }
 
         private void OnGameRunningStateChanged(string gameId, bool isRunning)
