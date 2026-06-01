@@ -84,12 +84,18 @@ namespace Lunex.Services
             Timeout = TimeSpan.FromSeconds(15)
         };
 
+        // HttpClient dedicated specifically to DoH queries to prevent reentrancy deadlocks on the custom SocketsHttpHandler
+        private static readonly HttpClient _dohHttp = new()
+        {
+            Timeout = TimeSpan.FromSeconds(10)
+        };
+
         private static async Task<string?> ResolveViaDoHAsync(string host, CancellationToken cancellationToken)
         {
             try
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, $"https://8.8.8.8/resolve?name={Uri.EscapeDataString(host)}&type=A");
-                using var response = await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                using var response = await _dohHttp.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);

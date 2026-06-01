@@ -11,43 +11,90 @@
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <local:NullOrEmptyToCollapsedConverter x:Key="NullOrEmptyToCollapsedConverter"/>
+        <local:GameToIconConverter x:Key="GameToIconConverter"/>
 
         <!-- ========================================== -->
         <!-- COLOR & DESIGN SYSTEM TOKENS               -->
         <!-- ========================================== -->
-        <SolidColorBrush x:Key="BackgroundBrush" Color="#131316" />
-        <SolidColorBrush x:Key="SurfaceBrush" Color="#131316" />
-        <SolidColorBrush x:Key="SurfaceContainerBrush" Color="#1F1F22" />
-        <SolidColorBrush x:Key="SurfaceContainerHighBrush" Color="#2A2A2D" />
-        <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="#1B1B1E" />
-        <SolidColorBrush x:Key="SurfaceContainerLowestBrush" Color="#0E0E11" />
+        <!-- Color Constants -->
+        <Color x:Key="BackgroundColor">#101010</Color>
+        <Color x:Key="SurfaceColor">#1E1E1E</Color>
+        <Color x:Key="SurfaceContainerColor">#161616</Color>
+        <Color x:Key="SurfaceContainerHighColor">#242424</Color>
+        <Color x:Key="SurfaceContainerLowColor">#1A1A1A</Color>
+        <Color x:Key="SurfaceContainerLowestColor">#0A0A0A</Color>
+
+        <Color x:Key="PrimaryColor">#D97757</Color>
+        <Color x:Key="PrimaryContainerColor">#D97757</Color>
+        <Color x:Key="OnPrimaryContainerColor">#FFFFFF</Color>
+        <Color x:Key="SecondaryColor">#3A3A3A</Color>
+        <Color x:Key="SecondaryContainerColor">#2E2E2E</Color>
+        <Color x:Key="TertiaryColor">#4A4A4A</Color>
+        <Color x:Key="OnSurfaceColor">#E5E7EB</Color>
+        <Color x:Key="OnSurfaceVariantColor">#9CA3AF</Color>
+        <Color x:Key="OutlineColor">#2A2A2A</Color>
+        <Color x:Key="ErrorColor">#EF4444</Color>
+
+        <!-- Standard SolidColorBrush Resources -->
+        <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+        <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+        <SolidColorBrush x:Key="SurfaceContainerBrush" Color="{StaticResource SurfaceContainerColor}" />
+        <SolidColorBrush x:Key="SurfaceContainerHighBrush" Color="{StaticResource SurfaceContainerHighColor}" />
+        <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="{StaticResource SurfaceContainerLowColor}" />
+        <SolidColorBrush x:Key="SurfaceContainerLowestBrush" Color="{StaticResource SurfaceContainerLowestColor}" />
         
-        <SolidColorBrush x:Key="PrimaryBrush" Color="#C3C0FF" />
-        <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#4F46E5" />
-        <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#DAD7FF" />
-        <SolidColorBrush x:Key="SecondaryBrush" Color="#DDB8FF" />
-        <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#7C03D3" />
-        <SolidColorBrush x:Key="TertiaryBrush" Color="#4EDEA3" />
-        <SolidColorBrush x:Key="OnSurfaceBrush" Color="#E5E1E6" />
-        <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#C7C4D8" />
-        <SolidColorBrush x:Key="OutlineBrush" Color="#918FA1" />
-        <SolidColorBrush x:Key="ErrorBrush" Color="#FFB4AB" />
+        <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
+        <SolidColorBrush x:Key="PrimaryContainerBrush" Color="{StaticResource PrimaryContainerColor}" />
+        <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="{StaticResource OnPrimaryContainerColor}" />
+        <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}" />
+        <SolidColorBrush x:Key="SecondaryContainerBrush" Color="{StaticResource SecondaryContainerColor}" />
+        <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource TertiaryColor}" />
+        <SolidColorBrush x:Key="OnSurfaceBrush" Color="{StaticResource OnSurfaceColor}" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="{StaticResource OnSurfaceVariantColor}" />
+        <SolidColorBrush x:Key="OutlineBrush" Color="{StaticResource OutlineColor}" />
+        <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
 
-        <!-- Linear Cyber Gradient -->
-        <LinearGradientBrush x:Key="CyberBackgroundGradient" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#131316" Offset="0.0" />
-            <GradientStop Color="#1F1235" Offset="0.5" />
-            <GradientStop Color="#0F0E11" Offset="1.0" />
-        </LinearGradientBrush>
+        <!-- Opacity-tinted brushes -->
+        <SolidColorBrush x:Key="PrimaryBrushLow" Color="{StaticResource PrimaryColor}" Opacity="0.08" />
+        <SolidColorBrush x:Key="PrimaryBrushMedium" Color="{StaticResource PrimaryColor}" Opacity="0.15" />
+        <SolidColorBrush x:Key="PrimaryBrushHigh" Color="{StaticResource PrimaryColor}" Opacity="0.25" />
+        <SolidColorBrush x:Key="PrimaryBrushVeryHigh" Color="{StaticResource PrimaryColor}" Opacity="0.40" />
 
-        <LinearGradientBrush x:Key="PrimaryAccentGradient" StartPoint="0,0" EndPoint="1,0">
-            <GradientStop Color="#4F46E5" Offset="0.0" />
-            <GradientStop Color="#7C03D3" Offset="1.0" />
-        </LinearGradientBrush>
+        <SolidColorBrush x:Key="SecondaryBrushLow" Color="{StaticResource SecondaryColor}" Opacity="0.08" />
+        <SolidColorBrush x:Key="SecondaryBrushMedium" Color="{StaticResource SecondaryColor}" Opacity="0.15" />
+        <SolidColorBrush x:Key="SecondaryBrushHigh" Color="{StaticResource SecondaryColor}" Opacity="0.25" />
+        <SolidColorBrush x:Key="SecondaryBrushVeryHigh" Color="{StaticResource SecondaryColor}" Opacity="0.40" />
+
+        <SolidColorBrush x:Key="TertiaryBrushLow" Color="{StaticResource TertiaryColor}" Opacity="0.08" />
+        <SolidColorBrush x:Key="TertiaryBrushMedium" Color="{StaticResource TertiaryColor}" Opacity="0.15" />
+        <SolidColorBrush x:Key="TertiaryBrushHigh" Color="{StaticResource TertiaryColor}" Opacity="0.25" />
+        <SolidColorBrush x:Key="TertiaryBrushVeryHigh" Color="{StaticResource TertiaryColor}" Opacity="0.40" />
+
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushLow" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.15" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushMedium" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.30" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.50" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushVeryHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.70" />
+
+        <!-- Ambient container glows (disabled/subtle dark background) -->
+        <SolidColorBrush x:Key="PrimaryContainerBrushAmbient" Color="#000000" Opacity="0.1" />
+        <SolidColorBrush x:Key="SecondaryContainerBrushAmbient" Color="#000000" Opacity="0.05" />
+
+        <!-- Flat Brushes instead of gradients -->
+        <SolidColorBrush x:Key="CyberBackgroundGradient" Color="{StaticResource BackgroundColor}" />
+        <SolidColorBrush x:Key="PrimaryAccentGradient" Color="{StaticResource PrimaryColor}" />
 
         <!-- Typography Settings -->
         <FontFamily x:Key="MonospaceFont">Consolas, JetBrains Mono, Courier New</FontFamily>
-        <FontFamily x:Key="DefaultFont">Segoe UI, Inter, Arial</FontFamily>
+        <FontFamily x:Key="DefaultFont">pack://application:,,,/Fonts/#Rajdhani</FontFamily>
+
+        <!-- atmosphere repeating diagonal lines overlay -->
+        <VisualBrush x:Key="DiagonalLinesPatternBrush" TileMode="Tile" Viewport="0,0,16,16" ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+                <Grid Width="16" Height="16" Background="Transparent">
+                    <Line X1="0" Y1="16" X2="16" Y2="0" Stroke="White" StrokeThickness="1.5" Opacity="0.04" />
+                </Grid>
+            </VisualBrush.Visual>
+        </VisualBrush>
 
         <!-- ========================================== -->
         <!-- SCROLLBAR CUSTOM STYLING                   -->
@@ -115,23 +162,40 @@
         <!-- TEXTBOX ROUNDED GLASS STYLE                -->
         <!-- ========================================== -->
         <Style x:Key="SunkenSearchBox" TargetType="TextBox">
-            <Setter Property="Background" Value="#0A0E0E11" />
-            <Setter Property="BorderBrush" Value="#1CFFFFFF" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="#121212" />
+            <Setter Property="BorderBrush" Value="#2A2A2A" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="CaretBrush" Value="{StaticResource PrimaryBrush}" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border x:Name="border"
-                                CornerRadius="18"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                        </Border>
+                        <Grid>
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock x:Name="watermark"
+                                       Text="{TemplateBinding Tag}"
+                                       Foreground="{StaticResource OnSurfaceVariantBrush}"
+                                       Opacity="0.4"
+                                       FontStyle="Italic"
+                                       Visibility="Collapsed"
+                                       IsHitTestVisible="False"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
                         <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="watermark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="watermark" Property="Visibility" Value="Visible" />
+                            </Trigger>
                             <Trigger Property="IsFocused" Value="true">
                                 <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
                             </Trigger>
@@ -141,26 +205,27 @@
             </Setter>
         </Style>
         <!-- ========================================== -->
-        <!-- PREMIUM GLASS PANEL STYLE                  -->
+        <!-- PREMIUM SURFACE PANEL STYLE (FORMERLY GLASS) -->
         <!-- ========================================== -->
         <Style x:Key="GlassPanelStyle" TargetType="Border">
-            <Setter Property="Background" Value="#12FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#19FFFFFF"/>
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.3"/>
+                    <DropShadowEffect Color="#000000" BlurRadius="8" ShadowDepth="1" Opacity="0.15"/>
                 </Setter.Value>
             </Setter>
         </Style>
+
 
         <!-- ========================================== -->
         <!-- PREMIUM COMBOBOX FLAT SYSTEM STYLE        -->
         <!-- ========================================== -->
         <Style TargetType="ComboBox">
-            <Setter Property="Background" Value="#1AFFFFFF"/>
-            <Setter Property="BorderBrush" Value="#1CFFFFFF"/>
+            <Setter Property="Background" Value="#121212"/>
+            <Setter Property="BorderBrush" Value="#2A2A2A"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="12,6,12,6"/>
@@ -171,6 +236,7 @@
             <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
             <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
@@ -235,15 +301,15 @@
                                    Placement="Bottom" 
                                    PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                                 <Border x:Name="dropDownBorder" 
-                                        Background="#18181B" 
-                                        BorderBrush="#2A2A2D" 
+                                        Background="#121212" 
+                                        BorderBrush="#2A2A2A" 
                                         BorderThickness="1" 
                                         CornerRadius="6" 
                                         MaxHeight="{TemplateBinding MaxDropDownHeight}" 
                                         MinWidth="{Binding ActualWidth, ElementName=backgroundBorder}"
                                         Margin="0,4,0,4">
                                     <Border.Effect>
-                                        <DropShadowEffect Color="#000000" BlurRadius="15" Opacity="0.5" ShadowDepth="4"/>
+                                        <DropShadowEffect Color="#000000" BlurRadius="12" Opacity="0.3" ShadowDepth="2"/>
                                     </Border.Effect>
                                     <ScrollViewer x:Name="DropDownScrollViewer">
                                         <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
@@ -259,14 +325,16 @@
                         
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter Property="Background" Value="#2AFFFFFF"/>
-                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="Background" Value="#161616"/>
                             </Trigger>
                             <Trigger Property="IsFocused" Value="true">
-                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="Background" Value="#161616"/>
                             </Trigger>
                             <Trigger Property="IsDropDownOpen" Value="true">
-                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="backgroundBorder" Property="Background" Value="#161616"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -279,8 +347,10 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="12,8"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">
@@ -296,11 +366,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#1AFFFFFF"/>
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="Transparent"/>
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#2A2A2A"/>
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
                             </Trigger>
                             <Trigger Property="IsSelected" Value="true">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#4F46E5"/>
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{StaticResource PrimaryBrush}"/>
                                 <Setter TargetName="ItemBorder" Property="BorderBrush" Value="Transparent"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
@@ -311,16 +381,17 @@
         </Style>
 
         <!-- Global Segoe UI Typography Styles -->
+        <!-- Global implicit styles using the DefaultFont -->
         <Style TargetType="Control">
-            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFont}" />
         </Style>
         <Style TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFont}" />
         </Style>
 
         <!-- Premium Round Thumb Slider Style -->
         <Style TargetType="Slider">
-            <Setter Property="Background" Value="#11FFFFFF"/>
+            <Setter Property="Background" Value="#1A1A1A"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -377,11 +448,11 @@
                                                     </Grid>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="ThumbEllipse" Property="Fill" Value="#C3C0FF"/>
-                                                            <Setter TargetName="ThumbEllipse" Property="Stroke" Value="#4F46E5"/>
+                                                            <Setter TargetName="ThumbEllipse" Property="Fill" Value="#F4A28C"/>
+                                                            <Setter TargetName="ThumbEllipse" Property="Stroke" Value="{StaticResource PrimaryBrush}"/>
                                                         </Trigger>
                                                         <Trigger Property="IsDragging" Value="True">
-                                                            <Setter TargetName="ThumbEllipse" Property="Fill" Value="#4F46E5"/>
+                                                            <Setter TargetName="ThumbEllipse" Property="Fill" Value="{StaticResource PrimaryBrush}"/>
                                                             <Setter TargetName="ThumbEllipse" Property="Stroke" Value="White"/>
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
@@ -398,52 +469,39 @@
         </Style>
 
         <!-- ========================================== -->
-        <!-- NEON BUTTON STYLE                          -->
+        <!-- DEFAULT NEUTRAL DARK BUTTON STYLE          -->
         <!-- ========================================== -->
-        <Style x:Key="NeonButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="White"/>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#222222"/>
+            <Setter Property="BorderBrush" Value="#2A2A2A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+            <Setter Property="Padding" Value="16,8"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="glowBorder"
-                                CornerRadius="8"
-                                BorderThickness="1"
-                                BorderBrush="#33FFFFFF">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <GradientStop Color="#4F46E5" Offset="0.0"/>
-                                    <GradientStop Color="#7C03D3" Offset="1.0"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <Border.Effect>
-                                <DropShadowEffect x:Name="btnGlow" Color="#4F46E5" BlurRadius="8" Opacity="0.3" ShadowDepth="0"/>
-                            </Border.Effect>
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                               Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <!-- Hover: intensify glow -->
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="glowBorder" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="#4F46E5" BlurRadius="18" Opacity="0.75" ShadowDepth="0"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter TargetName="glowBorder" Property="Opacity" Value="0.9"/>
+                                <Setter TargetName="border" Property="Background" Value="#2A2A2A"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#3E3E3E"/>
                             </Trigger>
-                            <!-- Pressed state -->
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="glowBorder" Property="Opacity" Value="0.7"/>
+                                <Setter TargetName="border" Property="Background" Value="#1A1A1A"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2A2A2A"/>
                             </Trigger>
-                            <!-- Disabled state -->
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="glowBorder" Property="Background" Value="#22FFFFFF"/>
-                                <Setter TargetName="glowBorder" Property="BorderBrush" Value="Transparent"/>
-                                <Setter TargetName="glowBorder" Property="Effect" Value="{x:Null}"/>
                                 <Setter Property="Foreground" Value="#55FFFFFF"/>
+                                <Setter TargetName="border" Property="Background" Value="#1A1A1A"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#222222"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -452,6 +510,201 @@
         </Style>
 
         <!-- ========================================== -->
+        <!-- PLAY BUTTON PREMIUM GRADIENT STYLE         -->
+        <!-- ========================================== -->
+        <Style x:Key="PlayButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="24,10"/>
+            <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ControlTemplate.Resources>
+                            <Storyboard x:Key="HoverOn">
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.02" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.02" Duration="0:0:0.1"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[0].Color" To="#FF6428" Duration="0:0:0.1"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[1].Color" To="#DE4C16" Duration="0:0:0.1"/>
+                            </Storyboard>
+                            <Storyboard x:Key="HoverOff">
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[0].Color" To="#E8541A" Duration="0:0:0.1"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[1].Color" To="#C94010" Duration="0:0:0.1"/>
+                            </Storyboard>
+                            <Storyboard x:Key="PressedOn">
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)" To="0.97" Duration="0:0:0.05"/>
+                                <DoubleAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)" To="0.97" Duration="0:0:0.05"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[0].Color" To="#B23C0F" Duration="0:0:0.05"/>
+                                <ColorAnimation Storyboard.TargetName="border" Storyboard.TargetProperty="Background.(LinearGradientBrush.GradientStops)[1].Color" To="#962A05" Duration="0:0:0.05"/>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+                        <Border x:Name="border"
+                                CornerRadius="4"
+                                BorderThickness="0"
+                                Padding="{TemplateBinding Padding}"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#E8541A" Offset="0"/>
+                                    <GradientStop Color="#C94010" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1.0" ScaleY="1.0"/>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#C94010" Opacity="0.4" BlurRadius="12" ShadowDepth="0"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard Storyboard="{StaticResource HoverOn}"/>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard Storyboard="{StaticResource HoverOff}"/>
+                            </EventTrigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource PressedOn}"/>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard Storyboard="{StaticResource HoverOn}"/>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- NeonButtonStyle — alias for PlayButtonStyle (used in dialogs and empty-state CTAs) -->
+        <Style x:Key="NeonButtonStyle" TargetType="Button" BasedOn="{StaticResource PlayButtonStyle}"/>
+
+        <!-- ========================================== -->
+        <!-- ICON BUTTON STYLE                          -->
+        <!-- ========================================== -->
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="20">
+                            <Border.Background>
+                                <SolidColorBrush x:Name="bgBrush" Color="Transparent"/>
+                            </Border.Background>
+                            <TextElement.Foreground>
+                                <SolidColorBrush x:Name="fgBrush" Color="#888888"/>
+                            </TextElement.Foreground>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="fgBrush" Storyboard.TargetProperty="Color" To="White" Duration="0:0:0.1"/>
+                                        <ColorAnimation Storyboard.TargetName="bgBrush" Storyboard.TargetProperty="Color" To="#22FFFFFF" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="fgBrush" Storyboard.TargetProperty="Color" To="#888888" Duration="0:0:0.1"/>
+                                        <ColorAnimation Storyboard.TargetName="bgBrush" Storyboard.TargetProperty="Color" To="Transparent" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modal Dialog Close Button Style -->
+        <Style x:Key="ModalCloseButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="12" Background="Transparent" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1CFFFFFF"/>
+                                <Setter Property="Foreground" Value="#FFA185"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2CFFFFFF"/>
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========================================== -->
+
+        <!-- SAVE ARGUMENTS BUTTON STYLE                -->
+        <!-- ========================================== -->
+        <Style x:Key="SaveArgsButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="4" Padding="6">
+                            <Border.Background>
+                                <SolidColorBrush x:Name="bgBrush" Color="Transparent"/>
+                            </Border.Background>
+                            <TextElement.Foreground>
+                                <SolidColorBrush x:Name="fgBrush" Color="#888888"/>
+                            </TextElement.Foreground>
+                            <Path x:Name="savePath" 
+                                  Data="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" 
+                                  Fill="{Binding ElementName=border, Path=(TextElement.Foreground)}" 
+                                  Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="fgBrush" Storyboard.TargetProperty="Color" To="{StaticResource PrimaryColor}" Duration="0:0:0.1"/>
+                                        <ColorAnimation Storyboard.TargetName="bgBrush" Storyboard.TargetProperty="Color" To="#22FFFFFF" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetName="fgBrush" Storyboard.TargetProperty="Color" To="#888888" Duration="0:0:0.1"/>
+                                        <ColorAnimation Storyboard.TargetName="bgBrush" Storyboard.TargetProperty="Color" To="Transparent" Duration="0:0:0.1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========================================== -->
+
         <!-- DATA TEMPLATE VIEW SWITCHING MAP           -->
         <!-- ========================================== -->
         <DataTemplate DataType="{x:Type vm:SplashViewModel}">

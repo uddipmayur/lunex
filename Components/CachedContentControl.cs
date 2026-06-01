@@ -1,78 +1,52 @@
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Lunex.Components
 {
-    // Cache views for ViewModels so we don't recreate them on every navigation. Essential for keeping WebView2 alive.
+    // Cache views for ViewModels so we don't recreate them on every navigation.
+    // Uses a ContentPresenter per ViewModel instance so WPF resolves DataTemplates and
+    // StaticResources correctly (they need to be inside the logical/visual tree).
+    [TemplatePart(Name = "PART_Container", Type = typeof(Border))]
     public class CachedContentControl : ContentControl
     {
-        private readonly Dictionary<object, UIElement> _viewCache = new();
+        private readonly Dictionary<object, ContentPresenter> _viewCache = new();
         private Border? _container;
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             _container = GetTemplateChild("PART_Container") as Border;
-            UpdateView();
+            // Show whatever is already bound when the template first applies
+            if (Content != null)
+                SwapView(Content);
         }
 
         protected override void OnContentChanged(object oldContent, object newContent)
         {
-            UpdateView();
+            base.OnContentChanged(oldContent, newContent);
+            SwapView(newContent);
         }
 
-        private void UpdateView()
+        private void SwapView(object? content)
         {
             if (_container == null) return;
 
-            var content = Content;
             if (content == null)
             {
                 _container.Child = null;
                 return;
             }
 
-            if (!_viewCache.TryGetValue(content, out var view))
+            // Reuse the cached ContentPresenter for this ViewModel instance, or create one.
+            // ContentPresenter lives inside the visual tree, so StaticResources resolve correctly.
+            if (!_viewCache.TryGetValue(content, out var presenter))
             {
-                view = CreateViewForContent(content);
-                if (view != null)
-                {
-                    _viewCache[content] = view;
-                }
+                presenter = new ContentPresenter { Content = content };
+                _viewCache[content] = presenter;
             }
 
-            _container.Child = view;
-        }
-
-        private UIElement? CreateViewForContent(object content)
-        {
-            var templateKey = new DataTemplateKey(content.GetType());
-            var template = TryFindResource(templateKey) as DataTemplate;
-
-            if (template == null)
-            {
-                template = Application.Current.TryFindResource(templateKey) as DataTemplate;
-            }
-
-            if (template != null)
-            {
-                var element = template.LoadContent() as FrameworkElement;
-                if (element != null)
-                {
-                    element.DataContext = content;
-                    return element;
-                }
-            }
-
-            // fallback if devs forgot to define a DataTemplate in App.xaml
-            return new TextBlock
-            {
-                Text = $"No DataTemplate found for {content.GetType().Name}",
-                Foreground = System.Windows.Media.Brushes.White,
-                Margin = new Thickness(20)
-            };
+            _container.Child = presenter;
         }
     }
 }

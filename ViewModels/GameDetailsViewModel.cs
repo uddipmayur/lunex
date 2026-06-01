@@ -16,7 +16,7 @@ namespace Lunex.ViewModels
 
         public Game Game => _game;
 
-        public string Title => _game.Title;
+        public string Title => _game.Title.ToUpperInvariant();
         public string ExePath => _game.ExePath;
         public string? CoverPath => _game.CoverPath;
 
@@ -26,6 +26,36 @@ namespace Lunex.ViewModels
             get => _launchArguments;
             set => SetProperty(ref _launchArguments, value);
         }
+
+        public bool IsInstalling
+        {
+            get => _game.IsInstalling;
+            set
+            {
+                if (_game.IsInstalling != value)
+                {
+                    _game.IsInstalling = value;
+                    OnPropertyChanged(nameof(IsInstalling));
+                    OnPropertyChanged(nameof(StatusText));
+                }
+            }
+        }
+
+        public int InstallProgress
+        {
+            get => _game.InstallProgress;
+            set
+            {
+                if (_game.InstallProgress != value)
+                {
+                    _game.InstallProgress = value;
+                    OnPropertyChanged(nameof(InstallProgress));
+                    OnPropertyChanged(nameof(StatusText));
+                }
+            }
+        }
+
+        public bool IsInstalled => _game.IsInstalled;
 
         private bool _isRunning;
         public bool IsRunning
@@ -40,12 +70,30 @@ namespace Lunex.ViewModels
             }
         }
 
-        public string StatusText => IsRunning ? "RUNNING..." : "PLAY";
+        public string StatusText
+        {
+            get
+            {
+                if (IsRunning) return "RUNNING...";
+                if (IsInstalling) return $"INSTALLING {InstallProgress}%";
+                if (!IsInstalled) return "INSTALL";
+                return "PLAY";
+            }
+        }
 
         public string FormattedPlayTime => FormatPlayTime(_game.PlayTimeMinutes);
         public string FormattedLastPlayed => FormatLastPlayed(_game.LastPlayed);
 
-        public List<double> WeeklyActivityHeights { get; }
+        public System.Collections.Generic.List<WeeklyActivityDay> WeeklyDays { get; } = new()
+        {
+            new WeeklyActivityDay { DayLabel = "M" },
+            new WeeklyActivityDay { DayLabel = "T" },
+            new WeeklyActivityDay { DayLabel = "W" },
+            new WeeklyActivityDay { DayLabel = "T" },
+            new WeeklyActivityDay { DayLabel = "F" },
+            new WeeklyActivityDay { DayLabel = "S" },
+            new WeeklyActivityDay { DayLabel = "S" }
+        };
 
         public ICommand PlayCommand { get; }
         public ICommand SaveArgsCommand { get; }
@@ -65,7 +113,15 @@ namespace Lunex.ViewModels
 
             PlayCommand = new RelayCommand(() =>
             {
-                if (!IsRunning) _libraryService.LaunchGame(_game);
+                if (IsRunning) return;
+                if (!IsInstalled)
+                {
+                    if (!IsInstalling) ExecuteInstall();
+                }
+                else
+                {
+                    _libraryService.LaunchGame(_game);
+                }
             });
 
             SaveArgsCommand = new RelayCommand(() =>
@@ -97,8 +153,9 @@ namespace Lunex.ViewModels
                 }
             });
 
-            // Calculate mock factors based on playtime for visual chart fidelity
-            WeeklyActivityHeights = CalculateWeeklyChart(_game.PlayTimeMinutes);
+            // Calculate real activity factor heights
+            _game.PopulateWeeklyActivity();
+            UpdateWeeklyChart();
         }
 
         private void OnGameRunningStateChanged(string gameId, bool isRunning)
@@ -120,8 +177,13 @@ namespace Lunex.ViewModels
                 {
                     _game.PlayTimeMinutes = updatedGame.PlayTimeMinutes;
                     _game.LastPlayed = updatedGame.LastPlayed;
+                    _game.SessionHistory = updatedGame.SessionHistory;
+                    _game.PopulateWeeklyActivity();
+                    UpdateWeeklyChart();
                     OnPropertyChanged(nameof(FormattedPlayTime));
                     OnPropertyChanged(nameof(FormattedLastPlayed));
+                    OnPropertyChanged(nameof(IsInstalled));
+                    OnPropertyChanged(nameof(StatusText));
                 });
             }
         }
@@ -145,22 +207,92 @@ namespace Lunex.ViewModels
             return $"{diff} days ago";
         }
 
-        private List<double> CalculateWeeklyChart(int totalMinutes)
+        private System.Windows.Media.SolidColorBrush? _dominantColorBrush;
+
+        public void SetDominantColorBrush(System.Windows.Media.SolidColorBrush? brush)
         {
-            var baseFactors = new List<double> { 0.08, 0.12, 0.22, 0.05, 0.38, 0.15, 0.02 };
-            var heights = new List<double>();
-            if (totalMinutes == 0)
+            _dominantColorBrush = brush;
+            UpdateWeeklyChart();
+        }
+
+        private void UpdateWeeklyChart()
+        {
+            // Always use a frozen brush so WPF Freezable ownership tracking
+            // doesn't conflict when the same brush is bound to multiple Borders.
+            // Clone + freeze the shared PrimaryBrush resource instead of using it directly.
+            System.Windows.Media.SolidColorBrush dominantBrush;
+            if (_dominantColorBrush != null)
             {
-                for (int i = 0; i < 7; i++) heights.Add(0.0);
+                dominantBrush = _dominantColorBrush; // already frozen (from ExtractDominantColorBrush)
             }
             else
             {
-                foreach (var factor in baseFactors)
+                var primary = (System.Windows.Media.SolidColorBrush)System.Windows.Application.Current.Resources["PrimaryBrush"];
+                dominantBrush = new System.Windows.Media.SolidColorBrush(primary.Color);
+                dominantBrush.Freeze();
+            }
+
+            var otherBarBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x44, 0x44, 0x44));
+            otherBarBrush.Freeze();
+
+            var otherLabelBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x55, 0x55, 0x55));
+            otherLabelBrush.Freeze();
+
+            DayOfWeek[] daysOfWeekOrder = new[]
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Tuesday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday,
+                DayOfWeek.Saturday,
+                DayOfWeek.Sunday
+            };
+
+            int maxMinutes = 0;
+            foreach (var day in daysOfWeekOrder)
+            {
+                if (_game.WeeklyActivity.TryGetValue(day, out int mins))
                 {
-                    heights.Add(factor * 180.0);
+                    if (mins > maxMinutes) maxMinutes = mins;
                 }
             }
-            return heights;
+
+            double maxBarHeight = 80.0;
+            double ghostHeight = 4.0;
+            DayOfWeek today = DateTime.Now.DayOfWeek;
+
+            for (int i = 0; i < 7; i++)
+            {
+                DayOfWeek day = daysOfWeekOrder[i];
+                int minutes = 0;
+                _game.WeeklyActivity.TryGetValue(day, out minutes);
+
+                double height;
+                if (maxMinutes == 0)
+                {
+                    height = ghostHeight;
+                }
+                else
+                {
+                    height = minutes == 0 ? ghostHeight : Math.Max(((double)minutes / maxMinutes) * maxBarHeight, ghostHeight);
+                }
+
+                WeeklyDays[i].Height = height;
+
+                if (day == today)
+                {
+                    WeeklyDays[i].BarBrush = dominantBrush;
+                    WeeklyDays[i].LabelBrush = System.Windows.Media.Brushes.White;
+                    WeeklyDays[i].LabelWeight = System.Windows.FontWeights.Bold;
+                }
+                else
+                {
+                    WeeklyDays[i].BarBrush = otherBarBrush;
+                    WeeklyDays[i].LabelBrush = otherLabelBrush;
+                    WeeklyDays[i].LabelWeight = System.Windows.FontWeights.Normal;
+                }
+            }
         }
 
         public void NotifyPropertiesChanged()
@@ -168,6 +300,55 @@ namespace Lunex.ViewModels
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(CoverPath));
             OnPropertyChanged(nameof(LaunchArguments));
+            OnPropertyChanged(nameof(IsInstalled));
+            OnPropertyChanged(nameof(StatusText));
+        }
+
+        private void ExecuteInstall()
+        {
+            IsInstalling = true;
+            InstallProgress = 0;
+            System.Threading.Tasks.Task.Run(async () =>
+            {
+                try
+                {
+                    for (int i = 0; i <= 100; i += 10)
+                    {
+                        await System.Threading.Tasks.Task.Delay(300);
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            InstallProgress = i;
+                        });
+                    }
+
+                    // Create dummy file at ExePath
+                    var dir = Path.GetDirectoryName(_game.ExePath);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    if (!File.Exists(_game.ExePath))
+                    {
+                        await File.WriteAllTextAsync(_game.ExePath, "dummy executable simulation");
+                    }
+
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IsInstalling = false;
+                        OnPropertyChanged(nameof(IsInstalled));
+                        OnPropertyChanged(nameof(StatusText));
+                        _libraryService.UpdateGame(_game);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error simulating install: {ex.Message}");
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IsInstalling = false;
+                    });
+                }
+            });
         }
 
         /// <summary>Unsubscribes service events. Call when navigating away from this view.</summary>
@@ -175,6 +356,44 @@ namespace Lunex.ViewModels
         {
             _libraryService.GameRunningStateChanged -= OnGameRunningStateChanged;
             _libraryService.GameUpdated -= OnGameUpdated;
+        }
+    }
+
+    public class WeeklyActivityDay : ViewModelBase
+    {
+        private string _dayLabel = string.Empty;
+        public string DayLabel
+        {
+            get => _dayLabel;
+            set => SetProperty(ref _dayLabel, value);
+        }
+
+        private double _height = 4.0;
+        public double Height
+        {
+            get => _height;
+            set => SetProperty(ref _height, value);
+        }
+
+        private System.Windows.Media.Brush _barBrush = System.Windows.Media.Brushes.Transparent;
+        public System.Windows.Media.Brush BarBrush
+        {
+            get => _barBrush;
+            set => SetProperty(ref _barBrush, value);
+        }
+
+        private System.Windows.Media.Brush _labelBrush = System.Windows.Media.Brushes.Transparent;
+        public System.Windows.Media.Brush LabelBrush
+        {
+            get => _labelBrush;
+            set => SetProperty(ref _labelBrush, value);
+        }
+
+        private System.Windows.FontWeight _labelWeight = System.Windows.FontWeights.Normal;
+        public System.Windows.FontWeight LabelWeight
+        {
+            get => _labelWeight;
+            set => SetProperty(ref _labelWeight, value);
         }
     }
 }

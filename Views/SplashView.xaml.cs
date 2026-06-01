@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -54,17 +53,23 @@ namespace Lunex.Views
             };
             _consoleTimer.Start();
 
-            // Perform automatic routing boot complete after 2800ms
-            Task.Delay(2800).ContinueWith(_ =>
+            // Use a DispatcherTimer for the boot delay so it stays on the UI thread.
+            // Avoids any DataContext timing race that Task.Delay + ContinueWith can hit.
+            var bootTimer = new DispatcherTimer
             {
-                Dispatcher.Invoke(() =>
+                Interval = TimeSpan.FromMilliseconds(2800)
+            };
+            bootTimer.Tick += (s, ev) =>
+            {
+                bootTimer.Stop();
+
+                // Re-read DataContext at tick time — it is guaranteed to be set by now
+                if (DataContext is SplashViewModel splashVm)
                 {
-                    if (DataContext is SplashViewModel splashVm)
-                    {
-                        splashVm.CompleteBoot();
-                    }
-                });
-            });
+                    splashVm.CompleteBoot();
+                }
+            };
+            bootTimer.Start();
         }
     }
 }

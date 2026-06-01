@@ -5,67 +5,61 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:services="clr-namespace:Lunex.Services"
              mc:Ignorable="d" 
-             d:DesignHeight="284" d:DesignWidth="284"
+             d:DesignHeight="276" d:DesignWidth="276"
              Cursor="Hand"
-             MouseLeftButtonUp="OnCardClick">
+             MouseLeftButtonUp="OnCardClick"
+             RenderTransformOrigin="0.5,0.5">
     <UserControl.Resources>
         <!-- Card Hover Animations -->
         <Storyboard x:Key="OnMouseEnter">
-            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.18" DecelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.18" DecelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="iconScale" Storyboard.TargetProperty="ScaleX" To="1.5" Duration="0:0:0.18" DecelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="iconScale" Storyboard.TargetProperty="ScaleY" To="1.5" Duration="0:0:0.18" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleX" To="1.02" Duration="0:0:0.15" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleY" To="1.02" Duration="0:0:0.15" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="coverScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.15" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="coverScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.15" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="HoverLeftBorder" Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:0.15" DecelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="InnerGlowBorder" Storyboard.TargetProperty="Opacity" To="0.25" Duration="0:0:0.15" DecelerationRatio="0.5"/>
         </Storyboard>
         <Storyboard x:Key="OnMouseLeave">
-            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.18" AccelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.18" AccelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="iconScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.18" AccelerationRatio="0.5"/>
-            <DoubleAnimation Storyboard.TargetName="iconScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.18" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="cardScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="coverScale" Storyboard.TargetProperty="ScaleX" To="1.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="coverScale" Storyboard.TargetProperty="ScaleY" To="1.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="HoverLeftBorder" Storyboard.TargetProperty="Opacity" To="0.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
+            <DoubleAnimation Storyboard.TargetName="InnerGlowBorder" Storyboard.TargetProperty="Opacity" To="0.0" Duration="0:0:0.12" AccelerationRatio="0.5"/>
         </Storyboard>
 
-        <Style x:Key="GameCardBorderStyle" TargetType="Border">
-            <Setter Property="Background" Value="#1F1F22"/>
-            <Setter Property="BorderBrush" Value="#1CFFFFFF"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Effect">
+        <!-- Custom Flat ProgressBar Template -->
+        <Style x:Key="FlatProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#1AFFFFFF"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
                 <Setter.Value>
-                    <DropShadowEffect Color="#000000" BlurRadius="12" Opacity="0.25" ShadowDepth="4"/>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid x:Name="TemplateRoot">
+                            <Border Background="{TemplateBinding Background}"/>
+                            <Border x:Name="PART_Indicator" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <!-- Glow Borders is Enabled AND Mouse is Over -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Source={x:Static services:SettingsService.Instance}, Path=EnableGlowBorders}" Value="True"/>
-                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="BorderBrush" Value="#C3C0FF"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect Color="#4F46E5" BlurRadius="25" Opacity="0.65" ShadowDepth="0"/>
-                        </Setter.Value>
-                    </Setter>
-                </MultiDataTrigger>
-                
-                <!-- Glow Borders is Disabled AND Mouse is Over -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Source={x:Static services:SettingsService.Instance}, Path=EnableGlowBorders}" Value="False"/>
-                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect Color="#000000" BlurRadius="20" Opacity="0.4" ShadowDepth="4"/>
-                        </Setter.Value>
-                    </Setter>
-                </MultiDataTrigger>
-            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="GameCardBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000" BlurRadius="8" Opacity="0.15" ShadowDepth="2"/>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
 
     <UserControl.RenderTransform>
-        <ScaleTransform x:Name="cardScale" CenterX="142" CenterY="142"/>
+        <ScaleTransform x:Name="cardScale"/>
     </UserControl.RenderTransform>
 
     <UserControl.Triggers>
@@ -78,66 +72,68 @@
     </UserControl.Triggers>
 
     <Border x:Name="CardBorder" Style="{StaticResource GameCardBorderStyle}">
-
         <Grid ClipToBounds="True">
-            <Grid.RowDefinitions>
-                <!-- 70% Cover Image -->
-                <RowDefinition Height="7*"/>
-                <!-- 30% Metadata bar -->
-                <RowDefinition Height="3*"/>
-            </Grid.RowDefinitions>
+            <!-- Cover Art Layer (Scales on hover) -->
+            <Grid x:Name="ImageContainer" RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform x:Name="coverScale"/>
+                </Grid.RenderTransform>
 
-            <!-- Background Cover Banner -->
-            <Grid x:Name="FallbackBanner" Grid.Row="0">
-                <Grid.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#224F46E5" Offset="0"/>
-                        <GradientStop Color="#227C03D3" Offset="1"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-                <!-- Glowing controller path fallback -->
-                <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" 
-                      Fill="#22C3C0FF" 
-                      Width="80" Height="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- Background Cover Banner -->
+                <Grid x:Name="FallbackBanner" Background="#1A1A1A">
+                    <!-- controller path fallback -->
+                    <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" 
+                          Fill="{StaticResource SecondaryBrush}" 
+                          Width="80" Height="50" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Custom Cover Image Layer -->
+                <Image x:Name="CoverImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
             </Grid>
 
-            <!-- Custom Cover Image Layer -->
-            <Image x:Name="CoverImage" Grid.Row="0" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+            <!-- Bottom Gradient & Metadata details -->
+            <Grid VerticalAlignment="Bottom" Height="110" IsHitTestVisible="False">
+                <Border>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="Transparent" Offset="0"/>
+                            <GradientStop Color="#CC000000" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
 
-            <!-- Visual Overlay Gradients -->
-            <Border Grid.Row="0">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Color="Transparent" Offset="0.0"/>
-                        <GradientStop Color="#99131316" Offset="0.5"/>
-                        <GradientStop Color="#FA131316" Offset="1.0"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-            </Border>
-
-            <!-- Bottom Content Metadata details -->
-            <Border Grid.Row="1" Background="#0CFFFFFF" Padding="16,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <!-- Metadata Content StackPanel -->
+                <StackPanel Margin="10,0,10,10" VerticalAlignment="Bottom">
+                    <TextBlock x:Name="TxtTitle" Text="GAME TITLE" Foreground="{StaticResource OnSurfaceBrush}" FontSize="13" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                     
-                    <!-- Game Icon next to Title -->
-                    <Border x:Name="CardIconBorder" Grid.Column="0" Width="32" Height="32" CornerRadius="6" Background="#1AFFFFFF" BorderBrush="#1CFFFFFF" BorderThickness="1" Margin="0,0,10,0" VerticalAlignment="Center" ClipToBounds="True" RenderTransformOrigin="0.5,0.5">
-                        <Border.RenderTransform>
-                            <ScaleTransform x:Name="iconScale" ScaleX="1.0" ScaleY="1.0"/>
-                        </Border.RenderTransform>
-                        <Image x:Name="CardIconImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock x:Name="TxtTitle" Text="Game Title" Foreground="White" FontSize="13.5" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
-                        <TextBlock x:Name="TxtPlaytime" Text="0 hours played" Foreground="#7FC7C4D8" FontSize="11" Margin="0,2,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="⏱" FontSize="11" Opacity="0.7" Foreground="{StaticResource OnSurfaceBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock x:Name="PlaytimeText"
+                                   Style="{x:Null}"
+                                   Text="0 hours"
+                                   FontSize="12"
+                                   FontFamily="{StaticResource DefaultFont}"
+                                   Opacity="0.75"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
-                </Grid>
+                </StackPanel>
+            </Grid>
+
+            <!-- Installation Status Badge -->
+            <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Padding="6,3" CornerRadius="4" Background="#CC1E1E1E" BorderBrush="#2A2A2A" BorderThickness="1" x:Name="StatusBadge" Visibility="Collapsed">
+                <TextBlock x:Name="TxtStatusBadge" Text="Not Installed" Foreground="{StaticResource OnSurfaceVariantBrush}" FontSize="9.5" FontWeight="Bold"/>
             </Border>
+
+            <!-- Installation Progress Bar -->
+            <ProgressBar x:Name="InstallProgressBar" Style="{StaticResource FlatProgressBarStyle}" VerticalAlignment="Bottom" Height="4" Minimum="0" Maximum="100" Value="0" Visibility="Collapsed"/>
+
+            <!-- Playtime Progress Bar -->
+            <ProgressBar x:Name="PlaytimeProgressBar" Style="{StaticResource FlatProgressBarStyle}" VerticalAlignment="Bottom" Height="2" Minimum="0" Maximum="100" Value="0"/>
+
+            <!-- Hover Overlays (initially Opacity="0") -->
+            <Border x:Name="HoverLeftBorder" Width="4" HorizontalAlignment="Left" Opacity="0" IsHitTestVisible="False"/>
+            <Border x:Name="InnerGlowBorder" BorderThickness="1" Opacity="0" CornerRadius="8" IsHitTestVisible="False"/>
         </Grid>
     </Border>
 </UserControl>

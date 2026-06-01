@@ -108,14 +108,15 @@ namespace Lunex.ViewModels
                 existing.PlayTimeMinutes = game.PlayTimeMinutes;
                 existing.LastPlayed = game.LastPlayed;
                 existing.LaunchArguments = game.LaunchArguments;
+                existing.CoverPath = game.CoverPath;
+                existing.IconPath = game.IconPath;
+                existing.ExePath = game.ExePath;
             }
             else
             {
                 _allGames.Add(game);
             }
-            // Only persist when a game session ends (IsRunning → false), not on every interim update.
-            // LaunchGame's finally block already calls SaveGames, so skip redundant I/O here.
-            System.Windows.Application.Current.Dispatcher.Invoke(ApplyFiltersAndSort);
+            RefreshInstalledGames();
         }
 
         private void OnGameRemoved(string gameId)
@@ -143,12 +144,36 @@ namespace Lunex.ViewModels
                 _ => query.OrderBy(g => g.Title) // All / Alphabetical
             };
 
+            // Reset IsHero and update IsRunning flags for all games
+            foreach (var game in _allGames)
+            {
+                game.IsHero = false;
+                lock (_runningIds)
+                {
+                    game.IsRunning = _runningIds.Contains(game.Id);
+                }
+            }
+
             // Clear and populate observable list
             FilteredGames.Clear();
             foreach (var game in query)
             {
                 FilteredGames.Add(game);
             }
+
+            // Determine the Hero card: assign to the game with the highest total play time (PlayTimeMinutes).
+            // If all games are unplayed (0 minutes), fall back to pinning the first item in the current sorted list.
+            var hero = FilteredGames.OrderByDescending(g => g.PlayTimeMinutes).FirstOrDefault();
+            if (hero != null && hero.PlayTimeMinutes == 0)
+            {
+                hero = FilteredGames.FirstOrDefault();
+            }
+
+            foreach (var game in FilteredGames)
+            {
+                game.IsHero = (hero != null && game.Id == hero.Id);
+            }
+
             OnPropertyChanged(nameof(IsLibraryEmpty));
         }
 

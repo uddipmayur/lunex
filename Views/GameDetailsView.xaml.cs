@@ -50,15 +50,21 @@ namespace Lunex.Views
                     bitmap.EndInit();
 
                     BannerCover.Source = bitmap;
+
+                    // Extract and set dominant color brush
+                    var dominantBrush = ExtractDominantColorBrush(bitmap);
+                    detailVm.SetDominantColorBrush(dominantBrush);
                 }
                 catch
                 {
                     BannerCover.Source = null;
+                    detailVm.SetDominantColorBrush(null);
                 }
             }
             else
             {
                 BannerCover.Source = null;
+                detailVm.SetDominantColorBrush(null);
             }
 
             // Extract associated EXE icon if custom icon is not set
@@ -119,6 +125,145 @@ namespace Lunex.Views
                     }
                 }
             }
+        }
+
+        private System.Windows.Media.SolidColorBrush ExtractDominantColorBrush(BitmapSource bitmap)
+        {
+            System.Windows.Media.SolidColorBrush result = (System.Windows.Media.SolidColorBrush)System.Windows.Application.Current.Resources["PrimaryBrush"];
+            try
+            {
+                if (bitmap.PixelWidth > 0 && bitmap.PixelHeight > 0)
+                {
+                    int width = bitmap.PixelWidth;
+                    int height = bitmap.PixelHeight;
+
+                    int startX = 0;
+                    int endX = width / 2;
+                    int startY = height / 2;
+                    int endY = height;
+                    int qWidth = endX - startX;
+                    int qHeight = endY - startY;
+
+                    if (qWidth > 0 && qHeight > 0)
+                    {
+                        var converted = new FormatConvertedBitmap();
+                        converted.BeginInit();
+                        converted.Source = bitmap;
+                        converted.DestinationFormat = System.Windows.Media.PixelFormats.Bgra32;
+                        converted.EndInit();
+
+                        int stride = qWidth * 4;
+                        byte[] pixels = new byte[qHeight * stride];
+                        var rect = new System.Windows.Int32Rect(startX, startY, qWidth, qHeight);
+                        converted.CopyPixels(rect, pixels, stride, 0);
+
+                        long totalR = 0;
+                        long totalG = 0;
+                        long totalB = 0;
+                        int sampleCount = 0;
+
+                        for (int row = 0; row < 5; row++)
+                        {
+                            int y = row * (qHeight - 1) / 4;
+                            for (int col = 0; col < 5; col++)
+                            {
+                                int x = col * (qWidth - 1) / 4;
+                                int index = (y * stride) + (x * 4);
+
+                                totalB += pixels[index];
+                                totalG += pixels[index + 1];
+                                totalR += pixels[index + 2];
+                                sampleCount++;
+                            }
+                        }
+
+                        double avgR = (double)totalR / sampleCount;
+                        double avgG = (double)totalG / sampleCount;
+                        double avgB = (double)totalB / sampleCount;
+
+                        RgbToHsl(avgR, avgG, avgB, out double h, out double s, out double l);
+                        s = Math.Clamp(s * 1.3, 0.0, 1.0);
+                        HslToRgb(h, s, l, out byte r, out byte g, out byte b);
+
+                        result = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
+                        result.Freeze();
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback to PrimaryBrush
+            }
+            return result;
+        }
+
+        private static void RgbToHsl(double r, double g, double b, out double h, out double s, out double l)
+        {
+            r /= 255.0;
+            g /= 255.0;
+            b /= 255.0;
+
+            double max = Math.Max(r, Math.Max(g, b));
+            double min = Math.Min(r, Math.Min(g, b));
+            h = s = l = (max + min) / 2.0;
+
+            if (max == min)
+            {
+                h = s = 0; // achromatic
+            }
+            else
+            {
+                double d = max - min;
+                s = l > 0.5 ? d / (2.0 - max - min) : d / (max + min);
+
+                if (max == r)
+                {
+                    h = (g - b) / d + (g < b ? 6.0 : 0.0);
+                }
+                else if (max == g)
+                {
+                    h = (b - r) / d + 2.0;
+                }
+                else if (max == b)
+                {
+                    h = (r - g) / d + 4.0;
+                }
+
+                h /= 6.0;
+            }
+        }
+
+        private static void HslToRgb(double h, double s, double l, out byte r, out byte g, out byte b)
+        {
+            double rTemp, gTemp, bTemp;
+
+            if (s == 0)
+            {
+                rTemp = gTemp = bTemp = l; // achromatic
+            }
+            else
+            {
+                double q = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
+                double p = 2.0 * l - q;
+
+                rTemp = HueToRgb(p, q, h + 1.0 / 3.0);
+                gTemp = HueToRgb(p, q, h);
+                bTemp = HueToRgb(p, q, h - 1.0 / 3.0);
+            }
+
+            r = (byte)Math.Clamp(Math.Round(rTemp * 255.0), 0, 255);
+            g = (byte)Math.Clamp(Math.Round(gTemp * 255.0), 0, 255);
+            b = (byte)Math.Clamp(Math.Round(bTemp * 255.0), 0, 255);
+        }
+
+        private static double HueToRgb(double p, double q, double t)
+        {
+            if (t < 0) t += 1.0;
+            if (t > 1) t -= 1.0;
+            if (t < 1.0 / 6.0) return p + (q - p) * 6.0 * t;
+            if (t < 1.0 / 2.0) return q;
+            if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6.0;
+            return p;
         }
     }
 }

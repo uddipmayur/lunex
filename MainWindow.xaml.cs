@@ -20,9 +20,6 @@ namespace Lunex
             var mainVm = new MainViewModel();
             DataContext = mainVm;
 
-            // Share visual context to sidebar navigation panel
-            SidebarNavPanel.DataContext = mainVm;
-
             // Handle border corners when maximized/restored
             StateChanged += (s, e) =>
             {

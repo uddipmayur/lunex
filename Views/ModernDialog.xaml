@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Lunex System Message"
+        Title="Lunex Message"
         Height="220" Width="420"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -65,10 +65,12 @@
                     <!-- Glowing shield or notification decal -->
                     <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="TitleText" Text="SYSTEM NOTIFICATION" Foreground="{StaticResource PrimaryBrush}" FontSize="10" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TitleText" Text="NOTIFICATION" Foreground="{StaticResource PrimaryBrush}" FontSize="10" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
-                <Button Grid.Column="1" Click="CloseDialog" Background="Transparent" BorderThickness="0" Cursor="Hand" Width="20" Height="20">
-                    <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" Fill="#66C7C4D8" Width="10" Height="10" Stretch="Uniform"/>
+                <Button Grid.Column="1" Click="CloseDialog" Style="{StaticResource ModalCloseButtonStyle}">
+                    <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
+                          Width="10" Height="10" Stretch="Uniform"/>
                 </Button>
             </Grid>
 

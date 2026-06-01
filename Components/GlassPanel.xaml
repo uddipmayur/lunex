@@ -6,12 +6,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="200">
     <Border CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}"
-            Background="#12FFFFFF"
-            BorderBrush="#19FFFFFF"
+            Background="{StaticResource SurfaceBrush}"
+            BorderBrush="{StaticResource OutlineBrush}"
             BorderThickness="1"
             Padding="{Binding Padding, RelativeSource={RelativeSource AncestorType=UserControl}}">
         <Border.Effect>
-            <DropShadowEffect Color="#000000" BlurRadius="20" ShadowDepth="4" Opacity="0.3"/>
+            <DropShadowEffect Color="#000000" BlurRadius="10" ShadowDepth="2" Opacity="0.2"/>
         </Border.Effect>
         <ContentPresenter />
     </Border>

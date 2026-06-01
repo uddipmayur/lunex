@@ -63,8 +63,8 @@
                 
                 <!-- 1. Header Bar -->
                 <StackPanel Orientation="Vertical" Margin="0,0,0,32">
-                    <TextBlock Text="Profile" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
-                    <TextBlock Text="MANAGE YOUR COMMANDER SPECS &amp; SECURITY CREDENTIALS" Foreground="#4CC3C0FF" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
+                    <TextBlock Text="Profile" Foreground="White" FontSize="28" FontWeight="ExtraBold" />
+                    <TextBlock Text="MANAGE YOUR PROFILE DETAILS &amp; SECURITY CREDENTIALS" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- 2. Bento Columns Grid -->
@@ -89,15 +89,15 @@
                                 </StackPanel>
 
                                 <!-- Username codename Input -->
-                                <TextBlock Text="CODENAME / USERNAME" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <TextBlock Text="USERNAME / CODENAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
                                 <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
 
                                 <!-- Title Rank Input -->
-                                <TextBlock Text="RANK / SECTOR SUBTITLE" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <TextBlock Text="RANK / SUBTITLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
                                 <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
 
                                 <!-- Custom Profile Decal/Avatar -->
-                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold" Margin="0,0,0,8"/>
+                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" Margin="0,0,0,8"/>
                                 <Grid Margin="0,0,0,32">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -127,21 +127,14 @@
 
                     <!-- Right: Holographic Live Preview Badge -->
                     <StackPanel Grid.Column="2" Orientation="Vertical">
-                        <TextBlock Text="BADGE DEPLOYMENT HOLOGRAPH" Foreground="#664EDEA3" FontSize="9.5" FontWeight="Bold"  Margin="0,0,0,12"/>
+                        <TextBlock Text="PROFILE BADGE PREVIEW" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold"  Margin="0,0,0,12"/>
                         
                         <components:GlassPanel CornerRadius="16" Padding="24">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <!-- Glowing Circular Badge frame with multi-layered neon glow -->
-                                <Border BorderBrush="#26C3C0FF" BorderThickness="1.5" Width="110" Height="110" CornerRadius="55" Padding="6" Margin="0,16,0,24">
-                                    <Border.Effect>
-                                        <DropShadowEffect Color="#C3C0FF" BlurRadius="20" Opacity="0.4" ShadowDepth="0"/>
-                                    </Border.Effect>
+                                <!-- Circular Badge frame -->
+                                <Border BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Width="110" Height="110" CornerRadius="55" Padding="6" Margin="0,16,0,24">
                                     <Grid>
-                                        <Border CornerRadius="49" BorderBrush="#40C3C0FF" BorderThickness="1.5" Background="#11FFFFFF">
-                                            <Border.Effect>
-                                                <DropShadowEffect Color="#7C03D3" BlurRadius="15" Opacity="0.5" ShadowDepth="0"/>
-                                            </Border.Effect>
-                                        </Border>
+                                        <Border CornerRadius="49" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Background="#242424" />
                                         <Ellipse Width="98" Height="98" Visibility="{Binding AvatarVisibility}">
                                             <Ellipse.Fill>
                                                 <ImageBrush ImageSource="{Binding DpPath}" Stretch="UniformToFill"/>

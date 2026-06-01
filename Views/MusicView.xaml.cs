@@ -228,17 +228,6 @@ namespace Lunex.Views
 
             var primaryBrush = (Brush)Application.Current.Resources["PrimaryBrush"];
             var secondaryBrush = (Brush)Application.Current.Resources["SecondaryBrush"];
-            var tertiaryBrush = (Brush)Application.Current.Resources["TertiaryBrush"];
-
-            // fancy gradient stops for neon vibe
-            var brushGradient = new LinearGradientBrush
-            {
-                StartPoint = new Point(0, 0),
-                EndPoint = new Point(0, 1)
-            };
-            brushGradient.GradientStops.Add(new GradientStop(((SolidColorBrush)tertiaryBrush).Color, 0.0));
-            brushGradient.GradientStops.Add(new GradientStop(((SolidColorBrush)secondaryBrush).Color, 0.5));
-            brushGradient.GradientStops.Add(new GradientStop(Color.FromRgb(79, 70, 229), 1.0)); // primaryContainer color
 
             for (int i = 0; i < barCount; i++)
             {
@@ -259,10 +248,10 @@ namespace Lunex.Views
                 };
                 colGrid.Children.Add(track);
 
-                // actual equalizer bar
+                // actual equalizer bar (solid primary orange color)
                 var bar = new Border
                 {
-                    Background = brushGradient,
+                    Background = primaryBrush,
                     Width = 6,
                     CornerRadius = new CornerRadius(3, 3, 0, 0),
                     VerticalAlignment = VerticalAlignment.Bottom,
@@ -271,10 +260,10 @@ namespace Lunex.Views
                 colGrid.Children.Add(bar);
                 _eqBars.Add(bar);
 
-                // peak decay dot
+                // peak decay dot (solid secondary grey color)
                 var peak = new Border
                 {
-                    Background = tertiaryBrush, // neon cyan
+                    Background = secondaryBrush,
                     Width = 6,
                     Height = 2,
                     CornerRadius = new CornerRadius(1),

@@ -49,12 +49,12 @@
                                 BorderBrush="#33FFFFFF">
                             <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <GradientStop Color="#C0392B" Offset="0.0"/>
-                                    <GradientStop Color="#E74C3C" Offset="1.0"/>
+                                    <GradientStop Color="{StaticResource ErrorColor}" Offset="0.0"/>
+                                    <GradientStop Color="#D05F5F" Offset="1.0"/>
                                 </LinearGradientBrush>
                             </Border.Background>
                             <Border.Effect>
-                                <DropShadowEffect x:Name="btnGlow" Color="#C0392B" BlurRadius="8" Opacity="0.3" ShadowDepth="0"/>
+                                <DropShadowEffect x:Name="btnGlow" Color="{StaticResource ErrorColor}" BlurRadius="8" Opacity="0.25" ShadowDepth="1.5"/>
                             </Border.Effect>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                               Margin="{TemplateBinding Padding}"/>
@@ -63,7 +63,7 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="glowBorder" Property="Effect">
                                     <Setter.Value>
-                                        <DropShadowEffect Color="#C0392B" BlurRadius="18" Opacity="0.75" ShadowDepth="0"/>
+                                        <DropShadowEffect Color="{StaticResource ErrorColor}" BlurRadius="12" Opacity="0.45" ShadowDepth="2"/>
                                     </Setter.Value>
                                 </Setter>
                                 <Setter TargetName="glowBorder" Property="Opacity" Value="0.9"/>
@@ -139,8 +139,10 @@
                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
                     <TextBlock x:Name="TitleText" Text="GAME OPTIONS" Foreground="{StaticResource PrimaryBrush}" FontSize="10" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
-                <Button Grid.Column="1" Click="Cancel_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" Width="20" Height="20">
-                    <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" Fill="#66C7C4D8" Width="10" Height="10" Stretch="Uniform"/>
+                <Button Grid.Column="1" Click="Cancel_Click" Style="{StaticResource ModalCloseButtonStyle}">
+                    <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
+                          Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
+                          Width="10" Height="10" Stretch="Uniform"/>
                 </Button>
             </Grid>
 
@@ -154,21 +156,15 @@
                     </StackPanel>
                 </Button>
 
-                <!-- Customize Button -->
-                <Button Click="Customize_Click" Height="40" Width="280" HorizontalAlignment="Center" Style="{StaticResource NeonButtonStyle}" Margin="0,0,0,10">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                            <GradientStop Color="#008080" Offset="0.0"/>
-                            <GradientStop Color="#00C0C0" Offset="1.0"/>
-                        </LinearGradientBrush>
-                    </Button.Background>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <!-- Gear icon -->
-                        <Path Data="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" 
-                              Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="CUSTOMIZE PROPERTIES" FontSize="11.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                 <!-- Customize Button -->
+                 <Button Click="Customize_Click" Height="40" Width="280" HorizontalAlignment="Center" Style="{StaticResource NeonButtonStyle}" Margin="0,0,0,10">
+                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                         <!-- Gear icon -->
+                         <Path Data="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" 
+                               Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                         <TextBlock Text="CUSTOMIZE PROPERTIES" FontSize="11.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                     </StackPanel>
+                 </Button>
 
                 <!-- Remove Button -->
                 <Button Click="Remove_Click" Height="40" Width="280" HorizontalAlignment="Center" Style="{StaticResource WarningButtonStyle}" Margin="0,0,0,12">

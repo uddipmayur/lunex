@@ -5,9 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:components="clr-namespace:Lunex.Components"
              xmlns:vm="clr-namespace:Lunex.ViewModels"
+             xmlns:local="clr-namespace:Lunex"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
+        <local:WidthToIsCompactConverter x:Key="WidthToIsCompactConverter"/>
         <!-- Slide-in from left and fade-in loaded transition -->
         <Storyboard x:Key="OnLoadedStoryboard">
             <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
@@ -27,13 +29,91 @@
         </Style>
 
         <!-- Grid Visibility Trigger -->
-        <Style x:Key="LibraryGridPanelStyle" TargetType="FrameworkElement">
+        <Style x:Key="LibraryGridPanelStyle" TargetType="ScrollViewer" BasedOn="{StaticResource {x:Type ScrollViewer}}">
             <Setter Property="Visibility" Value="Visible"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsLibraryEmpty}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Orange Outlined Search Box Style -->
+        <Style x:Key="OrangeSunkenSearchBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#121212" />
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="CaretBrush" Value="{StaticResource PrimaryBrush}" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6">
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock x:Name="watermark"
+                                       Text="{TemplateBinding Tag}"
+                                       Foreground="{StaticResource OnSurfaceVariantBrush}"
+                                       Opacity="0.4"
+                                       FontStyle="Italic"
+                                       Visibility="Collapsed"
+                                       IsHitTestVisible="False"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="watermark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="watermark" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Outlined Button Style -->
+        <Style x:Key="OutlinedButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryBrushLow}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryBrushMedium}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
 
@@ -57,54 +137,54 @@
 
         <!-- Top Header & Filter Controls Bar -->
         <Grid Grid.Row="0" Margin="32,24,32,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
             <!-- Library Text Brand Info -->
-            <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                <TextBlock Text="Library" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
-                <TextBlock Text="Non-Steam game integrations" Foreground="#66C7C4D8" FontSize="12" Margin="0,4,0,0"/>
-            </StackPanel>
-
-            <!-- Sorting, Filtering, and Add CTA button -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                <!-- Sort Dropdown Button -->
-                <ComboBox x:Name="SortCombo" Width="155" Height="36" Margin="0,0,16,0"
-                          SelectedValue="{Binding ActiveOption}"
-                          SelectedValuePath="Tag"
-                          Background="#19FFFFFF" Foreground="White" BorderBrush="#1CFFFFFF" BorderThickness="1">
-                    <ComboBoxItem Content="recently played" Tag="{x:Static vm:LibrarySortOption.RecentlyPlayed}"/>
-                    <ComboBoxItem Content="All games" Tag="{x:Static vm:LibrarySortOption.All}"/>
-                    <ComboBoxItem Content="most played" Tag="{x:Static vm:LibrarySortOption.MostPlayed}"/>
-                </ComboBox>
-
-                <!-- ADD GAME CTA Button -->
-                <Button Command="{Binding AddGameCommand}" Height="36" Padding="16,0"
-                        Style="{StaticResource NeonButtonStyle}">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="ADD GAME" Margin="8,0,0,0" FontSize="11" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="Library" Foreground="{StaticResource OnSurfaceBrush}" FontSize="32" FontWeight="Bold" local:TypographyHelper.CharacterSpacing="-25"/>
+                <TextBlock Text="YOUR COLLECTION" Foreground="{StaticResource OnSurfaceBrush}" FontSize="10" Opacity="0.4" local:TypographyHelper.CharacterSpacing="150" Margin="0,4,0,0"/>
             </StackPanel>
         </Grid>
 
         <!-- Main Content Grid Scroll Panel -->
         <ScrollViewer Grid.Row="1" Margin="24,12,24,24" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                      Style="{StaticResource LibraryGridPanelStyle}">
+                      Style="{StaticResource LibraryGridPanelStyle}"
+                      components:ScrollViewerHelper.IsSmoothScrollEnabled="True"
+                      PanningMode="VerticalOnly"
+                      VirtualizingPanel.IsVirtualizing="True"
+                      VirtualizingPanel.VirtualizationMode="Recycling"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      RenderOptions.BitmapScalingMode="LowQuality"
+                      CanContentScroll="False">
             <!-- Cards Grid -->
             <Grid>
-                <ItemsControl ItemsSource="{Binding FilteredGames}">
+                <ItemsControl ItemsSource="{Binding FilteredGames}"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" ItemWidth="300" ItemHeight="300" Margin="8"/>
+                            <WrapPanel Orientation="Horizontal" Margin="8"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <components:GameCard Margin="8" Width="284" Height="284"/>
+                            <components:GameCard Margin="8">
+                                <components:GameCard.Style>
+                                    <Style TargetType="{x:Type components:GameCard}">
+                                        <!-- Default standard card dimensions -->
+                                        <Setter Property="Width" Value="276"/>
+                                        <Setter Property="Height" Value="276"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsHero}" Value="True"/>
+                                                    <Condition Binding="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource WidthToIsCompactConverter}}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Width" Value="568"/>
+                                                <Setter Property="Height" Value="276"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </components:GameCard.Style>
+                            </components:GameCard>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -113,12 +193,12 @@
 
         <!-- Empty State -->
         <StackPanel Grid.Row="1" Style="{StaticResource EmptyStatePanelStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-60,0,0">
-            <Border Width="80" Height="80" CornerRadius="40" Background="#14C3C0FF" BorderBrush="#26C3C0FF" BorderThickness="1">
+            <Border Width="80" Height="80" CornerRadius="40" Background="{StaticResource PrimaryBrushLow}" BorderBrush="{StaticResource PrimaryBrushMedium}" BorderThickness="1">
                 <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2z" 
-                      Fill="#C3C0FF" Width="40" Height="40" Stretch="Uniform"/>
+                      Fill="{StaticResource PrimaryBrush}" Width="40" Height="40" Stretch="Uniform"/>
             </Border>
-            <TextBlock Text="YOUR LIBRARY IS EMPTY" Foreground="#C3C0FF" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,24,0,0" />
-            <TextBlock Text="Integrate custom applications directly into your Lunex Shell." Foreground="#7FC7C4D8" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,24" TextAlignment="Center" MaxWidth="380"/>
+            <TextBlock Text="YOUR LIBRARY IS EMPTY" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,24,0,0" />
+            <TextBlock Text="Integrate custom applications directly into your Lunex Shell." Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,24" TextAlignment="Center" MaxWidth="380"/>
             <Button Command="{Binding AddGameCommand}" Padding="24,12" HorizontalAlignment="Center"
                     Style="{StaticResource NeonButtonStyle}">
                 <TextBlock Text="ADD YOUR FIRST GAME" FontSize="11" FontWeight="Bold" />

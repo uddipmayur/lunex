@@ -8,13 +8,14 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <Version>5.3.67</Version>
+    <Version>6.2.8</Version>
     <AssemblyVersion>6.2.8</AssemblyVersion>
     <FileVersion>6.2.8.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Resource Include="app.ico" />
+    <Resource Include="Fonts\*.ttf" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
   </ItemGroup>
 

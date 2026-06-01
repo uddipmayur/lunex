@@ -15,7 +15,7 @@
                              From="0" To="1" Duration="0:0:0.35"/>
         </Storyboard>
 
-        <!-- iOS-style cybernetic Toggle Switch Template for CheckBox -->
+        <!-- iOS-style Toggle Switch Template for CheckBox -->
         <Style x:Key="CyberToggleSwitchStyle" TargetType="CheckBox">
             <Setter Property="Background" Value="#11FFFFFF"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -28,9 +28,6 @@
                                 <Border.Background>
                                     <SolidColorBrush Color="#22FFFFFF"/>
                                 </Border.Background>
-                                <Border.Effect>
-                                    <DropShadowEffect x:Name="glow" Color="#C3C0FF" BlurRadius="0" Opacity="0" ShadowDepth="0"/>
-                                </Border.Effect>
                             </Border>
                             <Ellipse x:Name="Thumb" Width="18" Height="18" Fill="#99FFFFFF" HorizontalAlignment="Left" Margin="3,0,0,0">
                                 <Ellipse.RenderTransform>
@@ -45,9 +42,7 @@
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="ThumbTranslate" Storyboard.TargetProperty="X" To="20" Duration="0:0:0.15"/>
-                                            <ColorAnimation Storyboard.TargetName="BackgroundBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#4F46E5" Duration="0:0:0.15"/>
-                                            <DoubleAnimation Storyboard.TargetName="glow" Storyboard.TargetProperty="BlurRadius" To="8" Duration="0:0:0.15"/>
-                                            <DoubleAnimation Storyboard.TargetName="glow" Storyboard.TargetProperty="Opacity" To="0.4" Duration="0:0:0.15"/>
+                                            <ColorAnimation Storyboard.TargetName="BackgroundBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="{StaticResource PrimaryColor}" Duration="0:0:0.15"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
@@ -56,8 +51,6 @@
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="ThumbTranslate" Storyboard.TargetProperty="X" To="0" Duration="0:0:0.15"/>
                                             <ColorAnimation Storyboard.TargetName="BackgroundBorder" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#22FFFFFF" Duration="0:0:0.15"/>
-                                            <DoubleAnimation Storyboard.TargetName="glow" Storyboard.TargetProperty="BlurRadius" To="0" Duration="0:0:0.15"/>
-                                            <DoubleAnimation Storyboard.TargetName="glow" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
@@ -102,27 +95,22 @@
 
         <!-- Danger button style for destructive actions -->
         <Style x:Key="DangerButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="#FFB4AB"/>
+            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="b" CornerRadius="8"
-                                Background="#1AFF4444"
-                                BorderBrush="#33FF4444"
+                                Background="#1AE06D6D"
+                                BorderBrush="#33E06D6D"
                                 BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                               Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#33FF4444"/>
-                                <Setter TargetName="b" Property="BorderBrush" Value="#66FF4444"/>
-                                <Setter TargetName="b" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect Color="#FF4444" BlurRadius="12" Opacity="0.4" ShadowDepth="0"/>
-                                    </Setter.Value>
-                                </Setter>
+                                <Setter TargetName="b" Property="Background" Value="#33E06D6D"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="#66E06D6D"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -156,7 +144,7 @@
                 <Grid Margin="0,0,0,32">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Shell Configurations" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
-                        <TextBlock Text="LUNEX SYSTEM CUSTOMIZATION &amp; PREFERENCES" Foreground="#4CC3C0FF" FontSize="9" FontWeight="Bold" Margin="0,4,0,0"/>
+                        <TextBlock Text="LUNEX SHELL CONFIGURATIONS &amp; PREFERENCES" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
                 <!-- ── SINGLE COLUMN FULL WIDTH SETTINGS ──────────────── -->
@@ -203,24 +191,24 @@
                         </StackPanel>
                     </components:GlassPanel>
 
-                    <!-- SECTION: Visual & Glow -->
+                    <!-- SECTION: Visual Preferences -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm1 14h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"
-                              Fill="{StaticResource TertiaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="VISUAL &amp; GLOW EFFECTS" Foreground="{StaticResource TertiaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                              Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="VISUAL PREFERENCES" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
                         <StackPanel Orientation="Vertical">
-                            <!-- Neon Glow Borders -->
+                            <!-- Accent Glow Borders -->
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Active Neon Glow Borders" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Display neon glow effects on interactive cards and hover states." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Active Accent Glow Borders" Foreground="White" FontSize="13" FontWeight="Bold"/>
+                                    <TextBlock Text="Display subtle glow effects on interactive cards and hover states." Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource CyberToggleSwitchStyle}"
                                           IsChecked="{Binding EnableGlowBorders}" VerticalAlignment="Center" Margin="16,0,0,0"/>
@@ -231,8 +219,8 @@
                     <!-- SECTION: Updates -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
-                              Fill="#7DD3FC" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="UPDATES" Foreground="#7DD3FC" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                              Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="UPDATES" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
@@ -247,11 +235,11 @@
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
                                     <TextBlock Text="Application Version" Foreground="White" FontSize="13" FontWeight="Bold"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                        <Border Background="#1A7DD3FC" BorderBrush="#337DD3FC" BorderThickness="1" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}" Foreground="#7DD3FC" FontSize="10" FontWeight="Bold"/>
+                                        <Border Background="{StaticResource SecondaryBrushLow}" BorderBrush="{StaticResource SecondaryBrushMedium}" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}" Foreground="{StaticResource SecondaryBrush}" FontSize="10" FontWeight="Bold"/>
                                         </Border>
                                         <TextBlock Margin="8,0,0,0" VerticalAlignment="Center"
-                                                   Foreground="#66C7C4D8" FontSize="11"
+                                                   Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="11"
                                                    Text="{Binding LatestVersion, StringFormat='Latest: v{0}'}"
                                                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
@@ -266,7 +254,7 @@
                                         <!-- Spinning refresh icon — controlled from SettingsView.xaml.cs -->
                                         <Path Tag="SpinIcon"
                                               Data="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
-                                              Fill="#7DD3FC" Width="13" Height="13" Stretch="Uniform"
+                                              Fill="{StaticResource SecondaryBrush}" Width="13" Height="13" Stretch="Uniform"
                                               VerticalAlignment="Center"
                                               RenderTransformOrigin="0.5,0.5">
                                             <Path.RenderTransform>
@@ -276,12 +264,12 @@
                                         <!-- Normal label (hidden while checking) -->
                                         <TextBlock Text="CHECK FOR UPDATES"
                                                    Margin="7,0,0,0" FontSize="11" FontWeight="Bold"
-                                                   Foreground="#99C7C4D8" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource OnSurfaceVariantBrushHigh}" VerticalAlignment="Center"
                                                    Visibility="{Binding IsCheckingForUpdate, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
                                         <!-- Checking label (shown while checking) -->
                                         <TextBlock Text="CHECKING..."
                                                    Margin="7,0,0,0" FontSize="11" FontWeight="Bold"
-                                                   Foreground="#7DD3FC" VerticalAlignment="Center"
+                                                   Foreground="{StaticResource SecondaryBrush}" VerticalAlignment="Center"
                                                    Visibility="{Binding IsCheckingForUpdate, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
                                 </Button>
@@ -290,7 +278,7 @@
                             <!-- Status / Progress area -->
                             <StackPanel Margin="0,14,0,0">
                                 <!-- Status text -->
-                                <TextBlock Text="{Binding UpdateStatusText}" Foreground="#99C7C4D8"
+                                <TextBlock Text="{Binding UpdateStatusText}" Foreground="{StaticResource OnSurfaceVariantBrushHigh}"
                                            FontSize="11" Margin="0,0,0,8"
                                            Visibility="{Binding UpdateStatusText, Converter={StaticResource NullOrEmptyToCollapsedConverter}}"/>
 
@@ -299,7 +287,7 @@
                                              Height="5" Margin="0,0,0,4"
                                              Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibilityConverter}}"
                                              Background="#15FFFFFF" BorderThickness="0"
-                                             Foreground="#7DD3FC"/>
+                                             Foreground="{StaticResource SecondaryBrush}"/>
 
                                 <!-- Install button shown when update is ready -->
                                 <Button Command="{Binding InstallUpdateCommand}"
@@ -308,8 +296,8 @@
                                         Style="{StaticResource GhostButtonStyle}">
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"
-                                              Fill="#7DD3FC" Width="11" Height="11" Stretch="Uniform" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding InstallButtonText}" Margin="7,0,0,0" FontSize="11" FontWeight="Bold" Foreground="#7DD3FC" VerticalAlignment="Center"/>
+                                              Fill="{StaticResource SecondaryBrush}" Width="11" Height="11" Stretch="Uniform" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding InstallButtonText}" Margin="7,0,0,0" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryBrush}" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
@@ -320,8 +308,8 @@
                     <!-- SECTION: About & Legal -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                              Fill="{StaticResource SecondaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="ABOUT &amp; LEGAL" Foreground="{StaticResource SecondaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                              Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="ABOUT &amp; LEGAL" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
@@ -376,8 +364,8 @@
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-                              Fill="#FFB4AB" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="DATA MANAGEMENT" Foreground="#FFB4AB" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                              Fill="{StaticResource ErrorBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        <TextBlock Text="DATA MANAGEMENT" Foreground="{StaticResource ErrorBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,20">

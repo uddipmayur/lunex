@@ -39,7 +39,12 @@ namespace Lunex.Services
                 if (File.Exists(_storageFilePath))
                 {
                     var jsonContent = File.ReadAllText(_storageFilePath);
-                    return JsonSerializer.Deserialize<List<Game>>(jsonContent) ?? new List<Game>();
+                    var games = JsonSerializer.Deserialize<List<Game>>(jsonContent) ?? new List<Game>();
+                    foreach (var game in games)
+                    {
+                        game.PopulateWeeklyActivity();
+                    }
+                    return games;
                 }
             }
             catch (Exception ex)
@@ -124,6 +129,18 @@ namespace Lunex.Services
 
                     // DO NOT FUCKING REMOVE THIS. Playtime tracking relies on process exit timing. If this fails, players get 0 hours.
                     game.PlayTimeMinutes += elapsedMinutes;
+
+                    if (game.SessionHistory == null)
+                    {
+                        game.SessionHistory = new List<PlaySession>();
+                    }
+                    game.SessionHistory.Add(new PlaySession
+                    {
+                        Timestamp = startTime,
+                        DurationMinutes = elapsedMinutes
+                    });
+                    game.PopulateWeeklyActivity();
+
                     UpdateGame(game);
 
                     // bring main window back from the dead

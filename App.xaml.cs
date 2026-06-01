@@ -74,8 +74,8 @@ namespace Lunex
             // force update listener because devs hate out of date clients
             UpdateService.Instance.ForceUpdateRequired += OnForceUpdateRequired;
 
-            // silent update check on startup - fire-and-forget, hope it doesn't crash on thread pool
-            _ = UpdateService.Instance.CheckAndDownloadOnLaunchAsync();
+            // silent update check on startup - run on background thread to prevent any startup block
+            _ = Task.Run(async () => await UpdateService.Instance.CheckAndDownloadOnLaunchAsync());
 
             base.OnStartup(e);
         }
@@ -97,8 +97,9 @@ namespace Lunex
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            // Show the full exception chain — XamlParseException wraps the real cause in InnerException
             MessageBox.Show(
-                $"Unhandled UI Exception:\n\n{e.Exception.GetType().Name}: {e.Exception.Message}\n\nStack Trace:\n{e.Exception.StackTrace}",
+                $"Unhandled UI Exception:\n\n{e.Exception}",
                 "Lunex - Crash",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);

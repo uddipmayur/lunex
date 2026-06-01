@@ -58,10 +58,10 @@ namespace Lunex.ViewModels
 
         public string DecalFilenameText => HasDp 
             ? $"Active: {System.IO.Path.GetFileName(DpPath)}" 
-            : "Procedural holographic projection is active.";
+            : "No custom avatar selected.";
 
-        public string BiometricStatusText => HasDp ? "ENCRYPTED" : "PROCEDURAL";
-        public string BiometricStatusColor => HasDp ? "#C3C0FF" : "#DDB8FF";
+        public string BiometricStatusText => HasDp ? "ACTIVE" : "DEFAULT";
+        public string BiometricStatusColor => HasDp ? "#C87A53" : "#8C9D8E";
 
         public string Initials
         {
@@ -109,7 +109,7 @@ namespace Lunex.ViewModels
                 var dialog = new OpenFileDialog
                 {
                     Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                    Title = "Select Biometric Decal"
+                    Title = "Select Profile Avatar"
                 };
                 if (dialog.ShowDialog() == true)
                 {
