@@ -176,7 +176,7 @@ namespace Lunex.ViewModels
             catch { }
         }
 
-        private string _profileUsername = "Lunex Shell";
+        private string _profileUsername = "Lunex";
         public string ProfileUsername
         {
             get => _profileUsername;

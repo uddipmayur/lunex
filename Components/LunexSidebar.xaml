@@ -144,7 +144,7 @@
                 <ComboBox Grid.Column="0" Height="28" 
                           SelectedValue="{Binding ActiveOption}"
                           SelectedValuePath="Tag"
-                          FontSize="11"
+                          FontSize="13"
                           Padding="8,2,24,2"
                           BorderThickness="0"
                           Background="Transparent"
@@ -169,7 +169,7 @@
             <TextBlock Grid.Row="0" 
                        Text="— ADDED GAMES" 
                        Foreground="#4b5563" 
-                       FontSize="10" 
+                       FontSize="12" 
                        FontWeight="Bold" 
                        local:TypographyHelper.CharacterSpacing="100" 
                        Margin="16,0,16,8"/>
@@ -187,12 +187,12 @@
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Column="0" Width="16" Height="16" CornerRadius="2" ClipToBounds="True" Background="#333" Margin="0,0,12,0" VerticalAlignment="Center">
-                                <Image Source="{Binding Converter={StaticResource GameToIconConverter}}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="LowQuality"/>
+                                <Image Source="{Binding Converter={StaticResource GameToIconConverter}}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
                             </Border>
 
                             <TextBlock Grid.Column="1" 
                                        Text="{Binding Title}" 
-                                       FontSize="13" 
+                                       FontSize="15" 
                                        VerticalAlignment="Center"
                                        TextTrimming="CharacterEllipsis">
                                 <TextBlock.Style>
@@ -239,7 +239,7 @@
                     <ControlTemplate TargetType="Button">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" Fill="White" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" x:Name="plusIcon"/>
-                            <TextBlock Text="Add a Game" Foreground="White" FontSize="14" Margin="8,0,0,0" VerticalAlignment="Center" x:Name="btnText"/>
+                            <TextBlock Text="Add a Game" Foreground="White" FontSize="15" Margin="8,0,0,0" VerticalAlignment="Center" x:Name="btnText"/>
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">

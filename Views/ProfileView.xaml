@@ -64,7 +64,7 @@
                 <!-- 1. Header Bar -->
                 <StackPanel Orientation="Vertical" Margin="0,0,0,32">
                     <TextBlock Text="Profile" Foreground="White" FontSize="28" FontWeight="ExtraBold" />
-                    <TextBlock Text="MANAGE YOUR PROFILE DETAILS &amp; SECURITY CREDENTIALS" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
+                    <TextBlock Text="MANAGE YOUR PROFILE DETAILS &amp; SECURITY CREDENTIALS" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- 2. Bento Columns Grid -->
@@ -85,19 +85,19 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                                     <Path Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" 
                                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
-                                    <TextBlock Text="PROFILE DETAILS" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="PROFILE DETAILS" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
 
                                 <!-- Username codename Input -->
-                                <TextBlock Text="USERNAME / CODENAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <TextBlock Text="USERNAME / CODENAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,8"/>
                                 <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
 
                                 <!-- Title Rank Input -->
-                                <TextBlock Text="RANK / SUBTITLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <TextBlock Text="RANK / SUBTITLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,8"/>
                                 <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
 
                                 <!-- Custom Profile Decal/Avatar -->
-                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" Margin="0,0,0,8"/>
+                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
                                 <Grid Margin="0,0,0,32">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -118,7 +118,7 @@
                                 <!-- Neon Save button -->
                                 <Button Command="{Binding SaveCommand}" Padding="24,12"
                                         Style="{StaticResource NeonButtonStyle}">
-                                    <TextBlock Text="SAVE PROFILE" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock Text="SAVE PROFILE" FontSize="13" FontWeight="Bold" />
                                 </Button>
                             </StackPanel>
                         </components:GlassPanel>
@@ -127,7 +127,7 @@
 
                     <!-- Right: Holographic Live Preview Badge -->
                     <StackPanel Grid.Column="2" Orientation="Vertical">
-                        <TextBlock Text="PROFILE BADGE PREVIEW" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold"  Margin="0,0,0,12"/>
+                        <TextBlock Text="PROFILE BADGE PREVIEW" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold"  Margin="0,0,0,12"/>
                         
                         <components:GlassPanel CornerRadius="16" Padding="24">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
@@ -135,7 +135,7 @@
                                 <Border BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Width="110" Height="110" CornerRadius="55" Padding="6" Margin="0,16,0,24">
                                     <Grid>
                                         <Border CornerRadius="49" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Background="#242424" />
-                                        <Ellipse Width="98" Height="98" Visibility="{Binding AvatarVisibility}">
+                                        <Ellipse Width="98" Height="98" Visibility="{Binding AvatarVisibility}" RenderOptions.BitmapScalingMode="HighQuality">
                                             <Ellipse.Fill>
                                                 <ImageBrush ImageSource="{Binding DpPath}" Stretch="UniformToFill"/>
                                             </Ellipse.Fill>
@@ -146,7 +146,7 @@
 
                                 <!-- Text credentials -->
                                 <TextBlock Text="{Binding Username}" Foreground="White" FontSize="18" FontWeight="Black" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource PrimaryBrush}" FontSize="9" FontWeight="Bold" Margin="0,6,0,24"  HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="Bold" Margin="0,6,0,24"  HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
 
                             </StackPanel>
                         </components:GlassPanel>

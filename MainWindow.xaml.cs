@@ -25,13 +25,13 @@ namespace Lunex
             {
                 if (WindowState == WindowState.Maximized)
                 {
-                    MainShellBorder.CornerRadius = new CornerRadius(0);
-                    MainShellBorder.BorderThickness = new Thickness(0);
+                    MainBorder.CornerRadius = new CornerRadius(0);
+                    MainBorder.BorderThickness = new Thickness(0);
                 }
                 else
                 {
-                    MainShellBorder.CornerRadius = new CornerRadius(16);
-                    MainShellBorder.BorderThickness = new Thickness(1);
+                    MainBorder.CornerRadius = new CornerRadius(16);
+                    MainBorder.BorderThickness = new Thickness(1);
                 }
             };
 

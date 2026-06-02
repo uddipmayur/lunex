@@ -129,7 +129,7 @@
                 <StackPanel Orientation="Horizontal">
                     <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" 
                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="TitleText" Text="CUSTOMIZE PROPERTIES" Foreground="{StaticResource PrimaryBrush}" FontSize="10" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TitleText" Text="CUSTOMIZE PROPERTIES" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
                 <Button Grid.Column="1" Click="Cancel_Click" Style="{StaticResource ModalCloseButtonStyle}">
                     <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
@@ -149,7 +149,7 @@
 
                 <!-- Game Title Section -->
                 <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,16">
-                    <TextBlock Text="GAME TITLE" Foreground="#66C7C4D8" FontSize="8.5" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBlock Text="GAME TITLE" Foreground="#B3C7C4D8" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
                     <TextBox x:Name="TxtGameTitle" Style="{StaticResource SunkenSearchBox}" Height="38" VerticalContentAlignment="Center" CaretBrush="{StaticResource PrimaryBrush}"/>
                 </StackPanel>
 
@@ -173,12 +173,12 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Text="COVER IMAGE" Foreground="{StaticResource PrimaryBrush}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                            <TextBlock Grid.Row="0" Text="COVER IMAGE" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
                             
                             <!-- Cover Preview -->
-                            <Border Grid.Row="1" Width="120" Height="140" CornerRadius="8" Background="#11FFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" ClipToBounds="True">
+                            <Border Grid.Row="1" Width="220" Height="124" CornerRadius="8" Background="#11FFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" ClipToBounds="True">
                                 <Grid>
-                                    <Image x:Name="CoverPreview" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image x:Name="CoverPreview" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     <!-- Fallback symbol -->
                                     <Path x:Name="CoverFallbackIcon" Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" 
                                           Fill="#22FFFFFF" Width="48" Height="48" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -201,12 +201,12 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Text="GAME ICON" Foreground="{StaticResource PrimaryBrush}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                            <TextBlock Grid.Row="0" Text="GAME ICON" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,12"/>
 
                             <!-- Icon Preview -->
                             <Border Grid.Row="1" Width="90" Height="90" CornerRadius="8" Background="#11FFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" ClipToBounds="True" VerticalAlignment="Center">
                                 <Grid>
-                                    <Image x:Name="IconPreview" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image x:Name="IconPreview" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     <!-- Fallback symbol -->
                                     <Path x:Name="IconFallbackIcon" Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
                                           Fill="#22FFFFFF" Width="36" Height="36" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -233,10 +233,10 @@
                     </Grid.ColumnDefinitions>
                     
                     <Button Grid.Column="0" Click="Save_Click" Height="38" Style="{StaticResource NeonButtonStyle}">
-                        <TextBlock Text="SAVE CHANGES" FontSize="11" FontWeight="Bold" />
+                        <TextBlock Text="SAVE CHANGES" FontSize="13" FontWeight="Bold" />
                     </Button>
                     <Button Grid.Column="2" Click="Cancel_Click" Height="38" Style="{StaticResource SecondaryButtonStyle}">
-                        <TextBlock Text="CANCEL" FontSize="11" FontWeight="Bold"/>
+                        <TextBlock Text="CANCEL" FontSize="13" FontWeight="Bold"/>
                     </Button>
                 </Grid>
             </Border>

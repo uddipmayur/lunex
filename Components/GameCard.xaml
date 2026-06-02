@@ -88,7 +88,7 @@
                 </Grid>
 
                 <!-- Custom Cover Image Layer -->
-                <Image x:Name="CoverImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                <Image x:Name="CoverImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" RenderOptions.BitmapScalingMode="HighQuality"/>
             </Grid>
 
             <!-- Bottom Gradient & Metadata details -->
@@ -104,14 +104,14 @@
 
                 <!-- Metadata Content StackPanel -->
                 <StackPanel Margin="10,0,10,10" VerticalAlignment="Bottom">
-                    <TextBlock x:Name="TxtTitle" Text="GAME TITLE" Foreground="{StaticResource OnSurfaceBrush}" FontSize="13" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="TxtTitle" Text="GAME TITLE" Foreground="{StaticResource OnSurfaceBrush}" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis"/>
                     
                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                         <TextBlock Text="⏱" FontSize="11" Opacity="0.7" Foreground="{StaticResource OnSurfaceBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                         <TextBlock x:Name="PlaytimeText"
                                    Style="{x:Null}"
                                    Text="0 hours"
-                                   FontSize="12"
+                                   FontSize="14"
                                    FontFamily="{StaticResource DefaultFont}"
                                    Opacity="0.75"
                                    Foreground="White"
@@ -122,7 +122,7 @@
 
             <!-- Installation Status Badge -->
             <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12" Padding="6,3" CornerRadius="4" Background="#CC1E1E1E" BorderBrush="#2A2A2A" BorderThickness="1" x:Name="StatusBadge" Visibility="Collapsed">
-                <TextBlock x:Name="TxtStatusBadge" Text="Not Installed" Foreground="{StaticResource OnSurfaceVariantBrush}" FontSize="9.5" FontWeight="Bold"/>
+                <TextBlock x:Name="TxtStatusBadge" Text="Not Installed" Foreground="{StaticResource OnSurfaceVariantBrush}" FontSize="12" FontWeight="Bold"/>
             </Border>
 
             <!-- Installation Progress Bar -->

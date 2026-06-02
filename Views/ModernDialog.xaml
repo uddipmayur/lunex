@@ -65,7 +65,7 @@
                     <!-- Glowing shield or notification decal -->
                     <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="TitleText" Text="NOTIFICATION" Foreground="{StaticResource PrimaryBrush}" FontSize="10" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TitleText" Text="NOTIFICATION" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                 </StackPanel>
                 <Button Grid.Column="1" Click="CloseDialog" Style="{StaticResource ModalCloseButtonStyle}">
                     <Path Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" 
@@ -75,22 +75,22 @@
             </Grid>
 
             <!-- Message Block -->
-            <TextBlock Grid.Row="1" x:Name="MessageText" Text="Profile settings saved successfully." Foreground="White" FontSize="13.5" Margin="24,12,24,18" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" LineHeight="20"/>
+            <TextBlock Grid.Row="1" x:Name="MessageText" Text="Profile settings saved successfully." Foreground="White" FontSize="15" Margin="24,12,24,18" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" LineHeight="20"/>
 
             <!-- Action buttons container -->
             <Border Grid.Row="2" Background="#0CFFFFFF" BorderBrush="#0BFFFFFF" BorderThickness="0,1,0,0" Padding="24,16">
                 <Grid>
                     <!-- OK Button -->
                     <Button x:Name="OkButton" Click="CloseDialog" Width="120" Height="36" Style="{StaticResource NeonButtonStyle}" HorizontalAlignment="Center">
-                        <TextBlock Text="OK" FontSize="11" FontWeight="Bold" />
+                        <TextBlock Text="OK" FontSize="13" FontWeight="Bold" />
                     </Button>
                     <!-- Yes / No Buttons -->
                     <UniformGrid x:Name="ConfirmButtons" Columns="2" Width="260" Visibility="Collapsed">
                         <Button Click="Yes_Click" Height="36" Style="{StaticResource NeonButtonStyle}" Margin="0,0,8,0">
-                            <TextBlock Text="YES" FontSize="11" FontWeight="Bold" />
+                            <TextBlock Text="YES" FontSize="13" FontWeight="Bold" />
                         </Button>
                         <Button Click="No_Click" Height="36" Style="{StaticResource NeonButtonStyle}" Margin="8,0,0,0">
-                            <TextBlock Text="NO" FontSize="11" FontWeight="Bold" />
+                            <TextBlock Text="NO" FontSize="13" FontWeight="Bold" />
                         </Button>
                     </UniformGrid>
                 </Grid>

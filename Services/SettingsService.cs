@@ -10,7 +10,6 @@ namespace Lunex.Services
     {
         public bool LaunchAtStartup { get; set; } = true;
         public bool MinimizeToTray { get; set; } = true;
-        public bool EnableGlowBorders { get; set; } = true;
         public bool DefaultsUpgraded { get; set; } = false;
     }
 
@@ -110,20 +109,6 @@ namespace Lunex.Services
             }
         }
 
-        public bool EnableGlowBorders
-        {
-            get => _data.EnableGlowBorders;
-            set
-            {
-                if (_data.EnableGlowBorders != value)
-                {
-                    _data.EnableGlowBorders = value;
-                    OnPropertyChanged();
-                    SaveSettings();
-                }
-            }
-        }
-
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -138,10 +123,17 @@ namespace Lunex.Services
                 {
                     if (enable)
                     {
+                        // Previous code:
+                        // var path = Environment.ProcessPath;
+                        // if (!string.IsNullOrEmpty(path))
+                        // {
+                        //     key.SetValue("Lunex", path);
+                        // }
+
                         var path = Environment.ProcessPath;
                         if (!string.IsNullOrEmpty(path))
                         {
-                            key.SetValue("Lunex", $"\"{path}\"");
+                            key.SetValue("Lunex", $"\"{path} \"");
                         }
                     }
                     else

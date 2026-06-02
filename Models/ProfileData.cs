@@ -5,7 +5,7 @@ namespace Lunex.Models
     public class ProfileData
     {
         [JsonPropertyName("username")]
-        public string Username { get; set; } = "Lunex Shell";
+        public string Username { get; set; } = "Lunex";
 
         [JsonPropertyName("title")]
         public string Title { get; set; } = "THE SILENT COMMANDER";

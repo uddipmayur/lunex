@@ -35,7 +35,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="#9CA3AF"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Height" Value="64"/>
             <Setter Property="Padding" Value="20,0"/>
@@ -163,7 +163,7 @@
     </Window.Resources>
  
     <!-- Main Outer visual shell -->
-    <Border x:Name="MainShellBorder" CornerRadius="16" Background="{StaticResource CyberBackgroundGradient}" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1" ClipToBounds="True" RenderTransformOrigin="0.5,0.5">
+    <Border x:Name="MainBorder" CornerRadius="16" Background="{StaticResource CyberBackgroundGradient}" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1" ClipToBounds="True" RenderTransformOrigin="0.5,0.5">
         <Border.RenderTransform>
             <ScaleTransform ScaleX="1.0" ScaleY="1.0"/>
         </Border.RenderTransform>
@@ -191,7 +191,7 @@
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="24,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
                     <!-- logo or branding -->
-                    <TextBlock Text="LUNEX" Foreground="{StaticResource PrimaryBrush}" FontSize="18" FontWeight="Black" VerticalAlignment="Center" Margin="0,0,40,0" local:TypographyHelper.CharacterSpacing="100"/>
+                    <TextBlock Text="LUNEX" Foreground="{StaticResource PrimaryBrush}" FontSize="20" FontWeight="Black" VerticalAlignment="Center" Margin="0,0,40,0" local:TypographyHelper.CharacterSpacing="100"/>
                     
                     <!-- Navigation Menu Items -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -256,7 +256,7 @@
                                     BorderThickness="1.5">
                                 <TextBlock Text="{Binding ProfileInitials}" 
                                            Foreground="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                                           FontSize="13" 
+                                           FontSize="15" 
                                            FontWeight="Black" 
                                            HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"/>
@@ -267,7 +267,8 @@
                                     CornerRadius="16" 
                                     BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource AncestorType=Button}}" 
                                     BorderThickness="1.5"
-                                    Visibility="{Binding ProfileHasDp, Converter={StaticResource BoolToVisConverter}}">
+                                    Visibility="{Binding ProfileHasDp, Converter={StaticResource BoolToVisConverter}}"
+                                    RenderOptions.BitmapScalingMode="HighQuality">
                                 <Border.Background>
                                     <ImageBrush ImageSource="{Binding ProfileDpPath}" Stretch="UniformToFill"/>
                                 </Border.Background>

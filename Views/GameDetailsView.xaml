@@ -96,9 +96,9 @@
             <StackPanel Orientation="Vertical">
                 
                 <!-- 1. Cinematic Hero Banner Panel -->
-                <Grid Height="440" Background="#1B1B1E">
+                <Grid Height="574" Background="#1B1B1E">
                     <!-- Banner Cover Image -->
-                    <Image x:Name="BannerCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image x:Name="BannerCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
 
                     <!-- Gradient overlays (Dark Slate Fade and Left Side Fade) -->
                     <Border>
@@ -127,7 +127,7 @@
                             <StackPanel Orientation="Horizontal" Margin="0,12,0,20">
                                 <!-- Game Icon image -->
                                 <Border x:Name="GameIconBorder" Width="48" Height="48" CornerRadius="8" Background="#2A2A2A" BorderBrush="#3A3A3A" BorderThickness="1" Margin="0,0,16,0" VerticalAlignment="Center" ClipToBounds="True">
-                                    <Image x:Name="GameIconImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image x:Name="GameIconImage" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
                                 <TextBlock Text="{Binding Title}"
                                            FontFamily="{StaticResource DefaultFont}"
@@ -158,15 +158,15 @@
                                 </StackPanel>
                                 <!-- Stats Blocks -->
                                 <StackPanel Margin="32,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="PLAYTIME" Foreground="#777" FontSize="9" FontWeight="SemiBold" local:TypographyHelper.CharacterSpacing="150" />
-                                    <TextBlock Text="{Binding FormattedPlayTime}" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,2,0,0"/>
+                                    <TextBlock Text="PLAYTIME" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="SemiBold" local:TypographyHelper.CharacterSpacing="150" />
+                                    <TextBlock Text="{Binding FormattedPlayTime}" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,2,0,0"/>
                                 </StackPanel>
 
                                 <Border BorderBrush="#1AFFFFFF" BorderThickness="1,0,0,0" Margin="32,8" Width="1"/>
 
                                 <StackPanel Margin="32,0,0,0" VerticalAlignment="Center">
-                                    <TextBlock Text="LAST PLAYED" Foreground="#777" FontSize="9" FontWeight="SemiBold" local:TypographyHelper.CharacterSpacing="150" />
-                                    <TextBlock Text="{Binding FormattedLastPlayed}" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,2,0,0"/>
+                                    <TextBlock Text="LAST PLAYED" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="SemiBold" local:TypographyHelper.CharacterSpacing="150" />
+                                    <TextBlock Text="{Binding FormattedLastPlayed}" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -192,8 +192,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Text="Weekly Activity" Foreground="White" FontSize="15" FontWeight="Bold"/>
-                                        <TextBlock Text="Hours played over the last 7 days" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="11" Margin="0,2,0,0"/>
+                                        <TextBlock Text="Weekly Activity" Foreground="White" FontSize="17" FontWeight="Bold"/>
+                                        <TextBlock Text="Hours played over the last 7 days" Foreground="#B3C7C4D8" FontSize="13.5" Margin="0,2,0,0"/>
                                     </StackPanel>
                                     <Path Grid.Column="1" Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" 
                                           Fill="{StaticResource OnSurfaceVariantBrushMedium}" Width="20" Height="20" Stretch="Uniform" VerticalAlignment="Center"/>
@@ -210,7 +210,7 @@
                                          <DataTemplate>
                                              <Grid>
                                                  <Border CornerRadius="4" Background="{Binding BarBrush}" Width="24" Height="{Binding Height}" VerticalAlignment="Bottom" Margin="0,0,0,20"/>
-                                                 <TextBlock Text="{Binding DayLabel}" Foreground="{Binding LabelBrush}" FontWeight="{Binding LabelWeight}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                                 <TextBlock Text="{Binding DayLabel}" Foreground="{Binding LabelBrush}" FontWeight="{Binding LabelWeight}" FontSize="12.5" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
                                              </Grid>
                                          </DataTemplate>
                                      </ItemsControl.ItemTemplate>
@@ -232,7 +232,7 @@
                             <!-- System Integration card -->
                             <components:GlassPanel Grid.Column="0" CornerRadius="12" Padding="20">
                                 <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="SYSTEM INTEGRATION" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,0,0,16"/>
+                                    <TextBlock Text="SYSTEM INTEGRATION" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,16"/>
                                     <Button Command="{Binding OpenDirectoryCommand}" Style="{StaticResource SystemIntegrationButtonStyle}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -243,8 +243,8 @@
                                             <Path Grid.Column="0" Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" 
                                                   Fill="{StaticResource OnSurfaceVariantBrushHigh}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
                                              <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
-                                                 <TextBlock Text="Executable Directory" Foreground="White" FontSize="11" FontWeight="SemiBold"/>
-                                                 <TextBlock Text="{Binding ExePath}" Foreground="#AAA" FontSize="11" FontFamily="Cascadia Mono, Consolas" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                                                 <TextBlock Text="Executable Directory" Foreground="White" FontSize="13.5" FontWeight="SemiBold"/>
+                                                 <TextBlock Text="{Binding ExePath}" Foreground="#B3C7C4D8" FontSize="13" FontFamily="Cascadia Mono, Consolas" TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
                                              </StackPanel>
                                              <!-- Arrow right -->
                                              <Path Grid.Column="2" Data="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" Fill="{StaticResource OnSurfaceVariantBrushMedium}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"/>
@@ -272,7 +272,7 @@
                                   <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                                       <Path Data="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" 
                                             Fill="{StaticResource OnSurfaceVariantBrushHigh}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                                      <TextBlock Text="LAUNCH ARGUMENTS" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                      <TextBlock Text="LAUNCH ARGUMENTS" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
                                   </StackPanel>
  
                                  <!-- Custom parameter input bar -->
@@ -287,7 +287,7 @@
                                               Text="{Binding LaunchArguments, UpdateSourceTrigger=PropertyChanged}"
                                               Tag="Add launch arguments..."
                                               CaretBrush="{StaticResource PrimaryBrush}"
-                                              FontSize="11" 
+                                              FontSize="13" 
                                               FontFamily="{StaticResource MonospaceFont}" 
                                               VerticalAlignment="Center"/>
                                      <!-- Save chevron disk -->

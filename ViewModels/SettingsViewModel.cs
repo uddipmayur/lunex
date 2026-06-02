@@ -34,19 +34,6 @@ namespace Lunex.ViewModels
             }
         }
 
-        public bool EnableGlowBorders
-        {
-            get => SettingsService.Instance.EnableGlowBorders;
-            set
-            {
-                if (SettingsService.Instance.EnableGlowBorders != value)
-                {
-                    SettingsService.Instance.EnableGlowBorders = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         private string _activeDirectory = "C:\\AntiGravity\\Lunex";
         public string ActiveDirectory
         {
@@ -104,7 +91,11 @@ namespace Lunex.ViewModels
                     }
                 }
             });
-            InstallUpdateCommand = new RelayCommand(_ => UpdateService.Instance.LaunchInstaller());
+            InstallUpdateCommand = new RelayCommand(_ =>
+            {
+                UpdateService.Instance.LaunchInstaller();
+                Application.Current?.Shutdown();
+            });
             OpenPrivacyPolicyCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/privacy-policy"));
             OpenTermsOfServiceCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/terms-of-service"));
 

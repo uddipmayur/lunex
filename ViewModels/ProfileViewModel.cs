@@ -13,7 +13,7 @@ namespace Lunex.ViewModels
         private readonly ProfileService _profileService;
         private readonly ProfileData _profile;
 
-        private string _username = "Lunex Shell";
+        private string _username = "Lunex";
         public string Username
         {
             get => _username;
