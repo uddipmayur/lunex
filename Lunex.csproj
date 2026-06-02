@@ -10,7 +10,7 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <Version>7.3.6</Version>
     <AssemblyVersion>7.3.6</AssemblyVersion>
-    <FileVersion>7.3.6.0</FileVersion>
+    <FileVersion>7.3.6</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
