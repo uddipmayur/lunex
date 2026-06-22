@@ -76,6 +76,14 @@ namespace Lunex.Models
             set => SetField(ref _playTimeMinutes, value);
         }
 
+        private int _cloudPlayTimeMinutes;
+        [JsonPropertyName("cloudPlayTimeMinutes")]
+        public int CloudPlayTimeMinutes
+        {
+            get => _cloudPlayTimeMinutes;
+            set => SetField(ref _cloudPlayTimeMinutes, value);
+        }
+
         private DateTime? _lastPlayed;
         [JsonPropertyName("lastPlayed")]
         public DateTime? LastPlayed
@@ -186,6 +194,7 @@ namespace Lunex.Models
                 CoverPath = this.CoverPath,
                 IconPath = this.IconPath,
                 PlayTimeMinutes = this.PlayTimeMinutes,
+                CloudPlayTimeMinutes = this.CloudPlayTimeMinutes,
                 LastPlayed = this.LastPlayed,
                 LaunchArguments = this.LaunchArguments,
                 IsInstalling = this.IsInstalling,

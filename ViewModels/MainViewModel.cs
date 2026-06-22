@@ -2,6 +2,7 @@ using System;
 using System.Net.NetworkInformation;
 using System.Windows.Threading;
 using System.Windows.Input;
+using System.Threading.Tasks;
 using Lunex.Services;
 
 namespace Lunex.ViewModels
@@ -35,6 +36,29 @@ namespace Lunex.ViewModels
         private long _lastBytesSent;
         private DateTime _lastTickTime;
         private readonly DispatcherTimer _networkTimer;
+
+        private bool _isOnline = NetworkInterface.GetIsNetworkAvailable();
+        public bool IsOnline
+        {
+            get => _isOnline;
+            set => SetProperty(ref _isOnline, value);
+        }
+
+        private bool _showCloudStatusText;
+        public bool ShowCloudStatusText
+        {
+            get => _showCloudStatusText;
+            set => SetProperty(ref _showCloudStatusText, value);
+        }
+
+        private string _cloudStatusText = "";
+        public string CloudStatusText
+        {
+            get => _cloudStatusText;
+            set => SetProperty(ref _cloudStatusText, value);
+        }
+
+        public ICommand ShowCloudStatusCommand { get; }
 
         public ViewModelBase CurrentViewModel
         {
@@ -75,6 +99,14 @@ namespace Lunex.ViewModels
             ProfileService.ProfileUpdated += (s, e) => LoadProfileData();
             LoadProfileData();
 
+            ShowCloudStatusCommand = new RelayCommand(async _ =>
+            {
+                CloudStatusText = IsOnline ? "Online" : "Offline";
+                ShowCloudStatusText = true;
+                await Task.Delay(3000);
+                ShowCloudStatusText = false;
+            });
+
             UpdateService.Instance.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(UpdateService.StatusText))
@@ -88,6 +120,22 @@ namespace Lunex.ViewModels
             _networkTimer.Interval = TimeSpan.FromSeconds(1);
             _networkTimer.Tick += (s, e) =>
             {
+                // Accurate internet check using a lightweight ping
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        using var ping = new Ping();
+                        var reply = ping.Send("8.8.8.8", 1000);
+                        var isOnline = reply.Status == IPStatus.Success;
+                        System.Windows.Application.Current.Dispatcher.InvokeAsync(() => IsOnline = isOnline);
+                    }
+                    catch
+                    {
+                        System.Windows.Application.Current.Dispatcher.InvokeAsync(() => IsOnline = false);
+                    }
+                });
+                
                 GetNetworkBytes(out long currentReceived, out long currentSent);
                 var now = DateTime.UtcNow;
                 double elapsed = (now - _lastTickTime).TotalSeconds;
@@ -176,7 +224,7 @@ namespace Lunex.ViewModels
             catch { }
         }
 
-        private string _profileUsername = "Lunex Shell";
+        private string _profileUsername = "Lunex";
         public string ProfileUsername
         {
             get => _profileUsername;

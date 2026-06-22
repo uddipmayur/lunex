@@ -13,7 +13,7 @@ namespace Lunex.Views
         private readonly List<string> _bootMessages = new()
         {
             "INITIALIZING SYSTEM CORES...",
-            "CONNECTING TO LUNEX SHELL DATABASE...",
+            "CONNECTING TO LUNEX DATABASE...",
             "SYNCING COMPONENT SUBSYSTEMS...",
             "OPTIMIZING DISPLAY RENDERING..."
         };

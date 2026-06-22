@@ -23,6 +23,25 @@ namespace Lunex
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            var pendingInstaller = UpdateService.GetPendingUpdateInstaller();
+            if (!string.IsNullOrEmpty(pendingInstaller))
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = pendingInstaller,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Could not launch pending update: {ex.Message}");
+                }
+                Shutdown();
+                return;
+            }
+
             // check if another instance is already running so we don't start duplicate processes like an idiot
             _mutex = new Mutex(true, MutexName, out bool isNewInstance);
             if (!isNewInstance)
@@ -76,6 +95,32 @@ namespace Lunex
 
             // silent update check on startup - run on background thread to prevent any startup block
             _ = Task.Run(async () => await UpdateService.Instance.CheckAndDownloadOnLaunchAsync());
+
+            // Initialize background cloud sync for gameplay data
+            CloudSyncService.Instance.Initialize();
+
+            bool isStartup = false;
+            foreach (var arg in e.Args)
+            {
+                if (arg.Equals("-startup", StringComparison.OrdinalIgnoreCase))
+                {
+                    isStartup = true;
+                    break;
+                }
+            }
+
+            var mainWindow = new MainWindow();
+            MainWindow = mainWindow;
+
+            if (!isStartup)
+            {
+                if (string.IsNullOrEmpty(SettingsService.Instance.CloudAuthToken) && !SettingsService.Instance.SkipLoginOnStartup)
+                {
+                    var authWin = new Views.AuthWindow();
+                    authWin.ShowDialog();
+                }
+                mainWindow.Show();
+            }
 
             base.OnStartup(e);
         }

@@ -57,7 +57,7 @@ namespace Lunex.Services
         {
             return new ProfileData
             {
-                Username = "Lunex Shell",
+                Username = "Lunex",
                 Title = "THE SILENT COMMANDER",
                 DpPath = null
             };

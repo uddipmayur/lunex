@@ -25,13 +25,13 @@ namespace Lunex
             {
                 if (WindowState == WindowState.Maximized)
                 {
-                    MainShellBorder.CornerRadius = new CornerRadius(0);
-                    MainShellBorder.BorderThickness = new Thickness(0);
+                    MainBorder.CornerRadius = new CornerRadius(0);
+                    MainBorder.BorderThickness = new Thickness(0);
                 }
                 else
                 {
-                    MainShellBorder.CornerRadius = new CornerRadius(16);
-                    MainShellBorder.BorderThickness = new Thickness(1);
+                    MainBorder.CornerRadius = new CornerRadius(16);
+                    MainBorder.BorderThickness = new Thickness(1);
                 }
             };
 
@@ -49,7 +49,10 @@ namespace Lunex
                 {
                     if (isRunning)
                     {
-                        Hide();
+                        if (Services.SettingsService.Instance.MinimizeToTray)
+                        {
+                            Hide();
+                        }
                     }
                     else
                     {
@@ -121,7 +124,7 @@ namespace Lunex
 
         private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!_isExiting && Services.SettingsService.Instance.MinimizeToTray)
+            if (!_isExiting)
             {
                 e.Cancel = true;
                 Hide();

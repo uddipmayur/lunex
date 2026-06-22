@@ -50,8 +50,8 @@
                 
                 <!-- 1. Header Bar -->
                 <StackPanel Orientation="Vertical" Margin="0,0,0,32">
-                    <TextBlock Text="Shell Diagnostics" Foreground="{StaticResource OnSurfaceBrush}" FontSize="28" FontWeight="ExtraBold" />
-                    <TextBlock Text="SYSTEM STATS &amp; PLAYTIME HISTOGRAM" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
+                    <TextBlock Text="Diagnostics" Foreground="{StaticResource OnSurfaceBrush}" FontSize="28" FontWeight="ExtraBold" />
+                    <TextBlock Text="SYSTEM STATS &amp; PLAYTIME HISTOGRAM" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- 2. Core Summary Row Cards -->
@@ -72,9 +72,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="TOTAL PLAYTIME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" />
-                                <TextBlock Text="{Binding TotalPlaytime}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="22" FontWeight="Black" Margin="0,8,0,2"/>
-                                <TextBlock Text="Active launcher logs" Foreground="{StaticResource OnSurfaceVariantBrushMedium}" FontSize="11"/>
+                                <TextBlock Text="TOTAL PLAYTIME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" />
+                                <TextBlock Text="{Binding TotalPlaytime}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="26" FontWeight="Black" Margin="0,8,0,2"/>
+                                <TextBlock Text="Active launcher logs" Foreground="#B3C7C4D8" FontSize="14"/>
                             </StackPanel>
                             <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{StaticResource PrimaryBrushLow}" BorderBrush="{StaticResource PrimaryBrushMedium}" BorderThickness="1" Padding="10" VerticalAlignment="Center">
                                 <Path Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.3 14.7L11 12.4V7h1.5v4.9l3.7 2.2-.7 1.2z" Fill="{StaticResource PrimaryBrush}" Stretch="Uniform"/>
@@ -90,9 +90,9 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="INTEGRATED FILES" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" />
-                                <TextBlock Text="{Binding IntegratedGamesCount}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="22" FontWeight="Black" Margin="0,8,0,2"/>
-                                <TextBlock Text="Custom shell executables" Foreground="{StaticResource OnSurfaceVariantBrushMedium}" FontSize="11"/>
+                                <TextBlock Text="INTEGRATED FILES" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" />
+                                <TextBlock Text="{Binding IntegratedGamesCount}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="26" FontWeight="Black" Margin="0,8,0,2"/>
+                                <TextBlock Text="Custom executables" Foreground="#B3C7C4D8" FontSize="14"/>
                             </StackPanel>
                             <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{StaticResource PrimaryBrushLow}" BorderBrush="{StaticResource PrimaryBrushMedium}" BorderThickness="1" Padding="10" VerticalAlignment="Center">
                                 <Path Data="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2z" Fill="{StaticResource PrimaryBrush}" Stretch="Uniform"/>
@@ -108,12 +108,12 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="CHIEF EXECUTABLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" />
-                                <TextBlock Text="{Binding MostPlayedGameTitle}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="22" FontWeight="Black" Margin="0,8,0,2" TextTrimming="CharacterEllipsis" MaxWidth="150"/>
-                                <TextBlock Text="Highest playtime record" Foreground="{StaticResource OnSurfaceVariantBrushMedium}" FontSize="11"/>
+                                <TextBlock Text="CHIEF EXECUTABLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" />
+                                <TextBlock Text="{Binding MostPlayedGameTitle}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="26" FontWeight="Black" Margin="0,8,0,2" TextTrimming="CharacterEllipsis" MaxWidth="220"/>
+                                <TextBlock Text="Highest playtime record" Foreground="#B3C7C4D8" FontSize="14"/>
                             </StackPanel>
                             <Border Grid.Column="1" Width="40" Height="40" CornerRadius="20" Background="{StaticResource PrimaryBrushLow}" BorderBrush="{StaticResource PrimaryBrushMedium}" BorderThickness="1" Padding="10" VerticalAlignment="Center">
-                                <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" Fill="{StaticResource PrimaryBrush}" Stretch="Uniform"/>
+                                <Path Data="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" Fill="{StaticResource PrimaryBrush}" Stretch="Uniform"/>
                             </Border>
                         </Grid>
                     </components:GlassPanel>
@@ -130,15 +130,15 @@
                     <!-- Left Column: CPU/RAM & Latency -->
                     <components:GlassPanel Grid.Column="0" CornerRadius="16" Padding="20">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="HARDWARE CORE STATUS" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,0,0,24"/>
+                            <TextBlock Text="HARDWARE CORE STATUS" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,24"/>
 
                             <!-- Processor Load -->
                             <StackPanel Orientation="Vertical" Margin="0,0,0,20">
                                 <Grid>
-                                    <TextBlock Text="PROCESSOR CORE LOAD" Foreground="{StaticResource OnSurfaceBrush}" FontSize="8.5"/>
+                                    <TextBlock Text="PROCESSOR CORE LOAD" Foreground="{StaticResource OnSurfaceBrush}" FontSize="12"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding CpuLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding CpuLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar Value="{Binding CpuLoad}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
@@ -147,10 +147,10 @@
                             <!-- RAM Load -->
                             <StackPanel Orientation="Vertical" Margin="0,0,0,28">
                                 <Grid>
-                                    <TextBlock Text="PHYSICAL SYSTEM RAM" Foreground="{StaticResource OnSurfaceBrush}" FontSize="8.5"/>
+                                    <TextBlock Text="PHYSICAL SYSTEM RAM" Foreground="{StaticResource OnSurfaceBrush}" FontSize="12"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding RamLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding RamLoad, StringFormat='{}{0:F1}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar Value="{Binding RamLoad}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>
@@ -164,8 +164,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="LATENCY LATITUDE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5"/>
-                                    <TextBlock Text="{Binding Latency, StringFormat='{}{0} ms'}" Foreground="{StaticResource PrimaryBrush}" FontSize="16" FontWeight="Bold" Margin="0,2,0,0"/>
+                                    <TextBlock Text="LATENCY LATITUDE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12"/>
+                                    <TextBlock Text="{Binding Latency, StringFormat='{}{0} ms'}" Foreground="{StaticResource PrimaryBrush}" FontSize="20" FontWeight="Bold" Margin="0,2,0,0"/>
                                 </StackPanel>
 
                                 <!-- Horizontal Sparkline vector -->
@@ -189,19 +189,19 @@
                     <!-- Right Column: Disk Storage Information -->
                     <components:GlassPanel Grid.Column="2" CornerRadius="16" Padding="20">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="PHYSICAL STORAGE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,0,0,24"/>
+                            <TextBlock Text="PHYSICAL STORAGE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,24"/>
 
                             <!-- Active Disk Space Details -->
-                            <TextBlock Text="{Binding DiskDriveName}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="14" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding DiskSpaceText}" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12.5" Margin="0,4,0,24"/>
+                            <TextBlock Text="{Binding DiskDriveName}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding DiskSpaceText}" Foreground="#B3C7C4D8" FontSize="15" Margin="0,4,0,24"/>
 
                             <!-- Storage Bar Indicator -->
                             <StackPanel Orientation="Vertical">
                                 <Grid>
-                                    <TextBlock Text="STORAGE OCCUPIED" Foreground="{StaticResource OnSurfaceBrush}" FontSize="8.5"/>
+                                    <TextBlock Text="STORAGE OCCUPIED" Foreground="{StaticResource OnSurfaceBrush}" FontSize="12"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding DiskUsagePercentage, StringFormat='{}{0:F0}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
-                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="11" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding DiskUsagePercentage, StringFormat='{}{0:F0}'}" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
+                                        <TextBlock Text="%" Foreground="{StaticResource PrimaryBrush}" FontSize="14" FontWeight="Bold"/>
                                     </StackPanel>
                                 </Grid>
                                 <ProgressBar Value="{Binding DiskUsagePercentage}" Minimum="0" Maximum="100" Style="{StaticResource GlowingProgressStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,8,0,0"/>

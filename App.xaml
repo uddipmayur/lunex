@@ -4,8 +4,7 @@
              xmlns:local="clr-namespace:Lunex"
              xmlns:vm="clr-namespace:Lunex.ViewModels"
              xmlns:views="clr-namespace:Lunex.Views"
-             xmlns:components="clr-namespace:Lunex.Components"
-             StartupUri="MainWindow.xaml">
+             xmlns:components="clr-namespace:Lunex.Components">
     <Application.Resources>
         <!-- Value Converters -->
         <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
@@ -57,8 +56,8 @@
         <!-- Opacity-tinted brushes -->
         <SolidColorBrush x:Key="PrimaryBrushLow" Color="{StaticResource PrimaryColor}" Opacity="0.08" />
         <SolidColorBrush x:Key="PrimaryBrushMedium" Color="{StaticResource PrimaryColor}" Opacity="0.15" />
-        <SolidColorBrush x:Key="PrimaryBrushHigh" Color="{StaticResource PrimaryColor}" Opacity="0.25" />
-        <SolidColorBrush x:Key="PrimaryBrushVeryHigh" Color="{StaticResource PrimaryColor}" Opacity="0.40" />
+        <SolidColorBrush x:Key="PrimaryBrushHigh" Color="{StaticResource PrimaryColor}" Opacity="0.75" />
+        <SolidColorBrush x:Key="PrimaryBrushVeryHigh" Color="{StaticResource PrimaryColor}" Opacity="0.85" />
 
         <SolidColorBrush x:Key="SecondaryBrushLow" Color="{StaticResource SecondaryColor}" Opacity="0.08" />
         <SolidColorBrush x:Key="SecondaryBrushMedium" Color="{StaticResource SecondaryColor}" Opacity="0.15" />
@@ -71,9 +70,9 @@
         <SolidColorBrush x:Key="TertiaryBrushVeryHigh" Color="{StaticResource TertiaryColor}" Opacity="0.40" />
 
         <SolidColorBrush x:Key="OnSurfaceVariantBrushLow" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.15" />
-        <SolidColorBrush x:Key="OnSurfaceVariantBrushMedium" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.30" />
-        <SolidColorBrush x:Key="OnSurfaceVariantBrushHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.50" />
-        <SolidColorBrush x:Key="OnSurfaceVariantBrushVeryHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.70" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushMedium" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.50" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.70" />
+        <SolidColorBrush x:Key="OnSurfaceVariantBrushVeryHigh" Color="{StaticResource OnSurfaceVariantColor}" Opacity="0.85" />
 
         <!-- Ambient container glows (disabled/subtle dark background) -->
         <SolidColorBrush x:Key="PrimaryContainerBrushAmbient" Color="#000000" Opacity="0.1" />
@@ -384,9 +383,11 @@
         <!-- Global implicit styles using the DefaultFont -->
         <Style TargetType="Control">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}" />
+            <Setter Property="FontSize" Value="13.5" />
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}" />
+            <Setter Property="FontSize" Value="13.5" />
         </Style>
 
         <!-- Premium Round Thumb Slider Style -->

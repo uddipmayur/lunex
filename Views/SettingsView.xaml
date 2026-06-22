@@ -138,13 +138,13 @@
 
     <Grid Background="Transparent">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Orientation="Vertical" Margin="32,24,32,48">
+            <StackPanel Orientation="Vertical" Margin="32,24,32,120">
 
                 <!-- ── PAGE HEADER ─────────────────────────────────── -->
                 <Grid Margin="0,0,0,32">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Shell Configurations" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
-                        <TextBlock Text="LUNEX SHELL CONFIGURATIONS &amp; PREFERENCES" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold" Margin="0,4,0,0"/>
+                        <TextBlock Text="Configurations" Foreground="White" FontSize="36" FontWeight="ExtraBold" />
+                        <TextBlock Text="LUNEX CONFIGURATIONS &amp; PREFERENCES" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="12" FontWeight="Bold" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
                 <!-- ── SINGLE COLUMN FULL WIDTH SETTINGS ──────────────── -->
@@ -154,7 +154,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
                               Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="GENERAL PREFERENCES" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="GENERAL PREFERENCES" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
@@ -166,8 +166,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Launch on System Startup" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Automatically open Lunex Shell when Windows starts." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Launch on System Startup" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Automatically open Lunex when Windows starts." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource CyberToggleSwitchStyle}"
                                           IsChecked="{Binding LaunchAtStartup}" VerticalAlignment="Center" Margin="16,0,0,0"/>
@@ -182,36 +182,11 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Minimize to System Tray" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Closing the window runs Lunex Shell silently in the background." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Minimize to System Tray" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Launching a game minimizes Lunex to the system tray." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <CheckBox Grid.Column="1" Style="{StaticResource CyberToggleSwitchStyle}"
                                           IsChecked="{Binding MinimizeToTray}" VerticalAlignment="Center" Margin="16,0,0,0"/>
-                            </Grid>
-                        </StackPanel>
-                    </components:GlassPanel>
-
-                    <!-- SECTION: Visual Preferences -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Path Data="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm1 14h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"
-                              Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="VISUAL PREFERENCES" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                    <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
-                        <StackPanel Orientation="Vertical">
-                            <!-- Accent Glow Borders -->
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Active Accent Glow Borders" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Display subtle glow effects on interactive cards and hover states." Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
-                                </StackPanel>
-                                <CheckBox Grid.Column="1" Style="{StaticResource CyberToggleSwitchStyle}"
-                                          IsChecked="{Binding EnableGlowBorders}" VerticalAlignment="Center" Margin="16,0,0,0"/>
                             </Grid>
                         </StackPanel>
                     </components:GlassPanel>
@@ -220,7 +195,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"
                               Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="UPDATES" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="UPDATES" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
@@ -233,13 +208,13 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Application Version" Foreground="White" FontSize="13" FontWeight="Bold"/>
+                                    <TextBlock Text="Application Version" Foreground="White" FontSize="15" FontWeight="Bold"/>
                                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                                         <Border Background="{StaticResource SecondaryBrushLow}" BorderBrush="{StaticResource SecondaryBrushMedium}" BorderThickness="1" CornerRadius="4" Padding="6,2">
-                                            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}" Foreground="{StaticResource SecondaryBrush}" FontSize="10" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding CurrentVersion, StringFormat='v{0}'}" Foreground="{StaticResource OnSurfaceBrush}" FontSize="12" FontWeight="Bold"/>
                                         </Border>
                                         <TextBlock Margin="8,0,0,0" VerticalAlignment="Center"
-                                                   Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="11"
+                                                   Foreground="#B3C7C4D8" FontSize="13"
                                                    Text="{Binding LatestVersion, StringFormat='Latest: v{0}'}"
                                                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
@@ -254,7 +229,7 @@
                                         <!-- Spinning refresh icon — controlled from SettingsView.xaml.cs -->
                                         <Path Tag="SpinIcon"
                                               Data="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
-                                              Fill="{StaticResource SecondaryBrush}" Width="13" Height="13" Stretch="Uniform"
+                                              Fill="#B3C7C4D8" Width="13" Height="13" Stretch="Uniform"
                                               VerticalAlignment="Center"
                                               RenderTransformOrigin="0.5,0.5">
                                             <Path.RenderTransform>
@@ -263,13 +238,13 @@
                                         </Path>
                                         <!-- Normal label (hidden while checking) -->
                                         <TextBlock Text="CHECK FOR UPDATES"
-                                                   Margin="7,0,0,0" FontSize="11" FontWeight="Bold"
-                                                   Foreground="{StaticResource OnSurfaceVariantBrushHigh}" VerticalAlignment="Center"
+                                                   Margin="7,0,0,0" FontSize="13" FontWeight="Bold"
+                                                   Foreground="#B3C7C4D8" VerticalAlignment="Center"
                                                    Visibility="{Binding IsCheckingForUpdate, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
                                         <!-- Checking label (shown while checking) -->
                                         <TextBlock Text="CHECKING..."
-                                                   Margin="7,0,0,0" FontSize="11" FontWeight="Bold"
-                                                   Foreground="{StaticResource SecondaryBrush}" VerticalAlignment="Center"
+                                                   Margin="7,0,0,0" FontSize="13" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"
                                                    Visibility="{Binding IsCheckingForUpdate, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </StackPanel>
                                 </Button>
@@ -278,8 +253,8 @@
                             <!-- Status / Progress area -->
                             <StackPanel Margin="0,14,0,0">
                                 <!-- Status text -->
-                                <TextBlock Text="{Binding UpdateStatusText}" Foreground="{StaticResource OnSurfaceVariantBrushHigh}"
-                                           FontSize="11" Margin="0,0,0,8"
+                                <TextBlock Text="{Binding UpdateStatusText}" Foreground="#B3C7C4D8"
+                                           FontSize="13" Margin="0,0,0,8"
                                            Visibility="{Binding UpdateStatusText, Converter={StaticResource NullOrEmptyToCollapsedConverter}}"/>
 
                                 <!-- Download progress bar -->
@@ -296,8 +271,8 @@
                                         Style="{StaticResource GhostButtonStyle}">
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"
-                                              Fill="{StaticResource SecondaryBrush}" Width="11" Height="11" Stretch="Uniform" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding InstallButtonText}" Margin="7,0,0,0" FontSize="11" FontWeight="Bold" Foreground="{StaticResource SecondaryBrush}" VerticalAlignment="Center"/>
+                                              Fill="{StaticResource PrimaryBrush}" Width="11" Height="11" Stretch="Uniform" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding InstallButtonText}" Margin="7,0,0,0" FontSize="13" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
@@ -309,7 +284,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
                               Fill="{StaticResource PrimaryBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="ABOUT &amp; LEGAL" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="ABOUT &amp; LEGAL" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,24">
@@ -321,8 +296,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Privacy Policy" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Read our privacy policy to understand how we secure and handle your data." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Privacy Policy" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Read our privacy policy to understand how we secure and handle your data." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <Button Grid.Column="1" Command="{Binding OpenPrivacyPolicyCommand}"
                                         Style="{StaticResource GhostButtonStyle}"
@@ -330,7 +305,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"
                                               Fill="#99C7C4D8" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"/>
-                                        <TextBlock Text="PRIVACY POLICY" Margin="7,0,0,0" FontSize="11" FontWeight="Bold" Foreground="#99C7C4D8" VerticalAlignment="Center"/>
+                                        <TextBlock Text="PRIVACY POLICY" Margin="7,0,0,0" FontSize="13" FontWeight="Bold" Foreground="#99C7C4D8" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
                             </Grid>
@@ -344,8 +319,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                    <TextBlock Text="Terms of Service" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                    <TextBlock Text="Review the terms, conditions, and guidelines for using the Lunex platform." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Terms of Service" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Review the terms, conditions, and guidelines for using the Lunex platform." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <Button Grid.Column="1" Command="{Binding OpenTermsOfServiceCommand}"
                                         Style="{StaticResource GhostButtonStyle}"
@@ -353,7 +328,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Path Data="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"
                                               Fill="#99C7C4D8" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"/>
-                                        <TextBlock Text="TERMS OF SERVICE" Margin="7,0,0,0" FontSize="11" FontWeight="Bold" Foreground="#99C7C4D8" VerticalAlignment="Center"/>
+                                        <TextBlock Text="TERMS OF SERVICE" Margin="7,0,0,0" FontSize="13" FontWeight="Bold" Foreground="#99C7C4D8" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
                             </Grid>
@@ -365,7 +340,7 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
                               Fill="{StaticResource ErrorBrush}" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
-                        <TextBlock Text="DATA MANAGEMENT" Foreground="{StaticResource ErrorBrush}" FontSize="9.5" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="DATA MANAGEMENT" Foreground="{StaticResource ErrorBrush}" FontSize="13" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,20">
@@ -375,15 +350,15 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0" Orientation="Vertical" VerticalAlignment="Center">
-                                <TextBlock Text="Clear Library Data" Foreground="White" FontSize="13" FontWeight="Bold"/>
-                                <TextBlock Text="Permanently wipe all integrated games from your library. This cannot be undone." Foreground="#66C7C4D8" FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                <TextBlock Text="Clear Library Data" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                <TextBlock Text="Permanently wipe all integrated games from your library. This cannot be undone." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,0" TextWrapping="Wrap"/>
                             </StackPanel>
                             <Button Grid.Column="1" Command="{Binding ClearCommand}" Padding="16,10" Margin="16,0,0,0"
                                     Style="{StaticResource DangerButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
                                     <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
                                           Fill="#FFB4AB" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center"/>
-                                    <TextBlock Text="CLEAR LIBRARY" Margin="8,0,0,0" FontSize="11" FontWeight="Bold" Foreground="#FFB4AB" VerticalAlignment="Center"/>
+                                    <TextBlock Text="CLEAR LIBRARY" Margin="8,0,0,0" FontSize="13" FontWeight="Bold" Foreground="#FFB4AB" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
                         </Grid>

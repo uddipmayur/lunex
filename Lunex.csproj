@@ -8,15 +8,23 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>app.ico</ApplicationIcon>
-    <Version>7.3.6</Version>
-    <AssemblyVersion>7.3.6</AssemblyVersion>
-    <FileVersion>7.3.6</FileVersion>
+    <Version>7.5.11</Version>
+    <AssemblyVersion>7.5.11</AssemblyVersion>
+    <FileVersion>7.5.11</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
+    <PackageReference Include="supabase-csharp" Version="0.16.2" />
     <Resource Include="app.ico" />
     <Resource Include="Fonts\*.ttf" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3967.48" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

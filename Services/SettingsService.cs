@@ -9,9 +9,11 @@ namespace Lunex.Services
     public class SettingsData
     {
         public bool LaunchAtStartup { get; set; } = true;
-        public bool MinimizeToTray { get; set; } = true;
-        public bool EnableGlowBorders { get; set; } = true;
+        public bool MinimizeToTray { get; set; } = false;
         public bool DefaultsUpgraded { get; set; } = false;
+        public string? CloudAuthToken { get; set; }
+        public string? CloudRefreshToken { get; set; }
+        public bool SkipLoginOnStartup { get; set; } = false;
     }
 
     public class SettingsService : INotifyPropertyChanged
@@ -33,11 +35,17 @@ namespace Lunex.Services
                 Directory.CreateDirectory(appDataDir);
             }
             _storageFilePath = Path.Combine(appDataDir, "lunex_settings.json");
+            bool isNewSettings = !File.Exists(_storageFilePath);
             _data = LoadSettings();
+
+            if (isNewSettings)
+            {
+                ApplyLaunchAtStartup(true);
+            }
 
             if (!_data.DefaultsUpgraded)
             {
-                _data.MinimizeToTray = true;
+                _data.MinimizeToTray = false;
                 _data.DefaultsUpgraded = true;
                 SaveSettings();
             }
@@ -110,14 +118,41 @@ namespace Lunex.Services
             }
         }
 
-        public bool EnableGlowBorders
+        public string? CloudAuthToken
         {
-            get => _data.EnableGlowBorders;
+            get => _data.CloudAuthToken;
             set
             {
-                if (_data.EnableGlowBorders != value)
+                if (_data.CloudAuthToken != value)
                 {
-                    _data.EnableGlowBorders = value;
+                    _data.CloudAuthToken = value;
+                    OnPropertyChanged();
+                    SaveSettings();
+                }
+            }
+        }
+
+        public string? CloudRefreshToken
+        {
+            get => _data.CloudRefreshToken;
+            set
+            {
+                if (_data.CloudRefreshToken != value)
+                {
+                    _data.CloudRefreshToken = value;
+                    SaveSettings();
+                }
+            }
+        }
+
+        public bool SkipLoginOnStartup
+        {
+            get => _data.SkipLoginOnStartup;
+            set
+            {
+                if (_data.SkipLoginOnStartup != value)
+                {
+                    _data.SkipLoginOnStartup = value;
                     OnPropertyChanged();
                     SaveSettings();
                 }
@@ -141,7 +176,7 @@ namespace Lunex.Services
                         var path = Environment.ProcessPath;
                         if (!string.IsNullOrEmpty(path))
                         {
-                            key.SetValue("Lunex", $"\"{path}\"");
+                            key.SetValue("Lunex", $"\"{path}\" -startup");
                         }
                     }
                     else

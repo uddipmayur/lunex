@@ -41,9 +41,16 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+#Graphify
+graphify-out/
+
+#Website
+website/
 
 #Others
 
+client_secret.json
 *.ps1
 *.pfx
 *.iss
+.env

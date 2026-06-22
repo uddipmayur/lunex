@@ -91,10 +91,10 @@ namespace Lunex.Components
             double progressVal = Math.Min(Math.Log(hours + 1.0) / Math.Log(51.0) * 100.0, 100.0);
             PlaytimeProgressBar.Value = progressVal;
 
-            // Apply dominant color to hover visuals
-            var dominantBrush = GetDominantColorBrush(_game);
-            HoverLeftBorder.Background = dominantBrush;
-            InnerGlowBorder.BorderBrush = dominantBrush;
+            // Apply standard orange hover visuals
+            var orangeBrush = (SolidColorBrush)Application.Current.Resources["PrimaryBrush"];
+            HoverLeftBorder.Background = orangeBrush;
+            InnerGlowBorder.BorderBrush = orangeBrush;
 
             // Handle installation state visually
             if (_game.IsInstalling)
@@ -135,7 +135,8 @@ namespace Lunex.Components
                                 var bitmap = new BitmapImage();
                                 bitmap.BeginInit();
                                 bitmap.UriSource = new Uri(coverPath);
-                                bitmap.DecodePixelWidth = 284;
+                                // Cover Image resolution
+                                bitmap.DecodePixelWidth = 800;
                                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                                 bitmap.EndInit();
                                 bitmap.Freeze();
@@ -168,7 +169,8 @@ namespace Lunex.Components
                             var bitmap = new BitmapImage();
                             bitmap.BeginInit();
                             bitmap.UriSource = new Uri(_game.CoverPath);
-                            bitmap.DecodePixelWidth = 284;
+                            // Cover Image resolution
+                            bitmap.DecodePixelWidth = 1200;
                             bitmap.CacheOption = BitmapCacheOption.OnLoad;
                             bitmap.EndInit();
                             bitmap.Freeze();
@@ -202,7 +204,8 @@ namespace Lunex.Components
 
         private SolidColorBrush GetDominantColorBrush(Game game)
         {
-            if (_dominantColorCache.TryGetValue(game.Id, out var cachedBrush))
+            string cacheKey = $"{game.Id}_{(game.IsHero ? "hero" : "normal")}";
+            if (_dominantColorCache.TryGetValue(cacheKey, out var cachedBrush))
             {
                 return cachedBrush;
             }
@@ -225,10 +228,30 @@ namespace Lunex.Components
                         int width = bitmap.PixelWidth;
                         int height = bitmap.PixelHeight;
 
+                        // Standard card vs Hero card aspect ratio crop
+                        double cardAspect = game.IsHero ? (568.0 / 276.0) : 1.0;
+                        double imgAspect = (double)width / height;
+
                         int startX = 0;
                         int endX = width / 2;
                         int startY = height / 2;
                         int endY = height;
+
+                        if (cardAspect > imgAspect)
+                        {
+                            double visibleHeight = width / cardAspect;
+                            double cropTop = (height - visibleHeight) / 2.0;
+                            startY = (int)(cropTop + visibleHeight / 2.0);
+                            endY = (int)(cropTop + visibleHeight);
+                        }
+                        else
+                        {
+                            double visibleWidth = height * cardAspect;
+                            double cropLeft = (width - visibleWidth) / 2.0;
+                            startX = (int)cropLeft;
+                            endX = (int)(cropLeft + visibleWidth / 2.0);
+                        }
+
                         int qWidth = endX - startX;
                         int qHeight = endY - startY;
 
@@ -245,10 +268,8 @@ namespace Lunex.Components
                             var rect = new Int32Rect(startX, startY, qWidth, qHeight);
                             converted.CopyPixels(rect, pixels, stride, 0);
 
-                            long totalR = 0;
-                            long totalG = 0;
-                            long totalB = 0;
-                            int sampleCount = 0;
+                            double sumR = 0, sumG = 0, sumB = 0;
+                            double totalWeight = 0;
 
                             for (int row = 0; row < 5; row++)
                             {
@@ -258,19 +279,32 @@ namespace Lunex.Components
                                     int x = col * (qWidth - 1) / 4;
                                     int index = (y * stride) + (x * 4);
 
-                                    totalB += pixels[index];
-                                    totalG += pixels[index + 1];
-                                    totalR += pixels[index + 2];
-                                    sampleCount++;
+                                    byte bVal = pixels[index];
+                                    byte gVal = pixels[index + 1];
+                                    byte rVal = pixels[index + 2];
+
+                                    RgbToHsl(rVal, gVal, bVal, out double hTemp, out double sTemp, out double lTemp);
+
+                                    // Saturation and luminance weighting to prioritize vibrant, colorful pixels.
+                                    double lWeight = 1.0 - Math.Abs(lTemp - 0.5) * 2.0; // peaks at 0.5
+                                    lWeight = Math.Max(0.1, lWeight);
+                                    double weight = sTemp * sTemp * lWeight;
+                                    weight = Math.Max(0.001, weight); // ensure some minimal weight
+
+                                    sumR += rVal * weight;
+                                    sumG += gVal * weight;
+                                    sumB += bVal * weight;
+                                    totalWeight += weight;
                                 }
                             }
 
-                            double avgR = (double)totalR / sampleCount;
-                            double avgG = (double)totalG / sampleCount;
-                            double avgB = (double)totalB / sampleCount;
+                            double avgR = sumR / totalWeight;
+                            double avgG = sumG / totalWeight;
+                            double avgB = sumB / totalWeight;
 
                             RgbToHsl(avgR, avgG, avgB, out double h, out double s, out double l);
-                            s = Math.Clamp(s * 1.3, 0.0, 1.0);
+                            s = Math.Clamp(s * 1.5, 0.5, 1.0); // Ensure a highly vibrant color
+                            l = Math.Clamp(l * 1.4, 0.5, 0.85); // Ensure it's bright enough to glow on a dark background
                             HslToRgb(h, s, l, out byte r, out byte g, out byte b);
 
                             result = new SolidColorBrush(Color.FromRgb(r, g, b));
@@ -284,7 +318,7 @@ namespace Lunex.Components
                 }
             }
 
-            _dominantColorCache[game.Id] = result;
+            _dominantColorCache[cacheKey] = result;
             return result;
         }
 

@@ -64,7 +64,7 @@
                 <!-- 1. Header Bar -->
                 <StackPanel Orientation="Vertical" Margin="0,0,0,32">
                     <TextBlock Text="Profile" Foreground="White" FontSize="28" FontWeight="ExtraBold" />
-                    <TextBlock Text="MANAGE YOUR PROFILE DETAILS &amp; SECURITY CREDENTIALS" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="9" FontWeight="Bold"  Margin="0,4,0,0"/>
+                    <TextBlock Text="MANAGE YOUR PROFILE DETAILS &amp; SECURITY CREDENTIALS" Foreground="{StaticResource PrimaryBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <!-- 2. Bento Columns Grid -->
@@ -85,19 +85,21 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                                     <Path Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" 
                                           Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
-                                    <TextBlock Text="PROFILE DETAILS" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="PROFILE DETAILS" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold"  Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
 
                                 <!-- Username codename Input -->
-                                <TextBlock Text="USERNAME / CODENAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <TextBlock Text="USERNAME / CODENAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,8"/>
                                 <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
 
                                 <!-- Title Rank Input -->
-                                <TextBlock Text="RANK / SUBTITLE" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold"  Margin="0,0,0,8"/>
-                                <TextBox Style="{StaticResource SunkenSearchBox}" Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,24" Height="38" VerticalContentAlignment="Center"/>
+                                <TextBlock Text="RANK" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,8"/>
+                                <Border Background="#0AFFFFFF" BorderBrush="#22FFFFFF" BorderThickness="1" CornerRadius="4" Margin="0,0,0,24" Height="38">
+                                    <TextBlock Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Foreground="#99C7C4D8" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Margin="12,0"/>
+                                </Border>
 
                                 <!-- Custom Profile Decal/Avatar -->
-                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="8.5" FontWeight="Bold" Margin="0,0,0,8"/>
+                                <TextBlock Text="CUSTOM PROFILE AVATAR" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
                                 <Grid Margin="0,0,0,32">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -118,8 +120,38 @@
                                 <!-- Neon Save button -->
                                 <Button Command="{Binding SaveCommand}" Padding="24,12"
                                         Style="{StaticResource NeonButtonStyle}">
-                                    <TextBlock Text="SAVE PROFILE" FontSize="11" FontWeight="Bold" />
+                                    <TextBlock Text="SAVE PROFILE" FontSize="13" FontWeight="Bold" />
                                 </Button>
+                                
+                                <Button Command="{Binding LinkCloudCommand}" Padding="24,12" Margin="0,16,0,0"
+                                        Style="{StaticResource GhostButtonStyle}"
+                                        Visibility="{Binding IsNotCloudLinked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Path Data="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" 
+                                              Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="LINK CLOUD ACCOUNT" FontSize="13" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                                
+                                <!-- Cloud Linked State -->
+                                <Border Margin="0,16,0,0" Padding="16,12" CornerRadius="8" Background="#0A4ade80" BorderBrush="#224ade80" BorderThickness="1"
+                                        Visibility="{Binding IsCloudLinked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" Fill="#4ade80" Width="16" Height="16" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="CLOUD CONNECTED" FontSize="13" FontWeight="Bold" Foreground="#4ade80" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        
+                                        <Button Grid.Column="1" Command="{Binding LogoutCloudCommand}" Padding="16,6" Style="{StaticResource GhostButtonStyle}" Background="#11ff4b2b" BorderBrush="#22ff4b2b">
+                                            <TextBlock Text="LOG OUT" FontSize="11" FontWeight="Bold" Foreground="#ff4b2b"/>
+                                        </Button>
+                                    </Grid>
+                                </Border>
                             </StackPanel>
                         </components:GlassPanel>
 
@@ -127,7 +159,7 @@
 
                     <!-- Right: Holographic Live Preview Badge -->
                     <StackPanel Grid.Column="2" Orientation="Vertical">
-                        <TextBlock Text="PROFILE BADGE PREVIEW" Foreground="{StaticResource PrimaryBrush}" FontSize="9.5" FontWeight="Bold"  Margin="0,0,0,12"/>
+                        <TextBlock Text="PROFILE BADGE PREVIEW" Foreground="{StaticResource PrimaryBrush}" FontSize="13" FontWeight="Bold"  Margin="0,0,0,12"/>
                         
                         <components:GlassPanel CornerRadius="16" Padding="24">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
@@ -135,7 +167,7 @@
                                 <Border BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Width="110" Height="110" CornerRadius="55" Padding="6" Margin="0,16,0,24">
                                     <Grid>
                                         <Border CornerRadius="49" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1.5" Background="#242424" />
-                                        <Ellipse Width="98" Height="98" Visibility="{Binding AvatarVisibility}">
+                                        <Ellipse Width="98" Height="98" Visibility="{Binding AvatarVisibility}" RenderOptions.BitmapScalingMode="HighQuality">
                                             <Ellipse.Fill>
                                                 <ImageBrush ImageSource="{Binding DpPath}" Stretch="UniformToFill"/>
                                             </Ellipse.Fill>
@@ -146,7 +178,7 @@
 
                                 <!-- Text credentials -->
                                 <TextBlock Text="{Binding Username}" Foreground="White" FontSize="18" FontWeight="Black" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
-                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource PrimaryBrush}" FontSize="9" FontWeight="Bold" Margin="0,6,0,24"  HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{StaticResource PrimaryBrush}" FontSize="12" FontWeight="Bold" Margin="0,6,0,24"  HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
 
                             </StackPanel>
                         </components:GlassPanel>

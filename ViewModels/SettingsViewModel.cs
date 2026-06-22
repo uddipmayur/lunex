@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Lunex.Services;
+using System.Linq;
 
 namespace Lunex.ViewModels
 {
@@ -29,19 +30,6 @@ namespace Lunex.ViewModels
                 if (SettingsService.Instance.MinimizeToTray != value)
                 {
                     SettingsService.Instance.MinimizeToTray = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public bool EnableGlowBorders
-        {
-            get => SettingsService.Instance.EnableGlowBorders;
-            set
-            {
-                if (SettingsService.Instance.EnableGlowBorders != value)
-                {
-                    SettingsService.Instance.EnableGlowBorders = value;
                     OnPropertyChanged();
                 }
             }
@@ -104,7 +92,11 @@ namespace Lunex.ViewModels
                     }
                 }
             });
-            InstallUpdateCommand = new RelayCommand(_ => UpdateService.Instance.LaunchInstaller());
+            InstallUpdateCommand = new RelayCommand(_ =>
+            {
+                UpdateService.Instance.LaunchInstaller();
+                Application.Current?.Shutdown();
+            });
             OpenPrivacyPolicyCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/privacy-policy"));
             OpenTermsOfServiceCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/terms-of-service"));
 
@@ -145,7 +137,7 @@ namespace Lunex.ViewModels
         {
             var confirmDialog = new Views.ModernDialog(
                 "Clear Library Data",
-                "Are you sure you want to clear your integrated games library? This cannot be undone.",
+                "Are you sure you want to clear your integrated games library and gameplay data? This will also wipe your cloud play history and reset your rank. This cannot be undone.",
                 isConfirmation: true);
 
             if (Application.Current?.MainWindow != null)
@@ -155,9 +147,64 @@ namespace Lunex.ViewModels
             {
                 try
                 {
-                    LibraryService.Instance.SaveGames(new List<Models.Game>());
+                    var gamesToClear = LibraryService.Instance.LoadGames();
+                    foreach (var game in gamesToClear)
+                    {
+                        game.PlayTimeMinutes = 0;
+                        game.CloudPlayTimeMinutes = 0;
+                        game.LastPlayed = null;
+                        game.SessionHistory?.Clear();
+                        game.PopulateWeeklyActivity();
+                        LibraryService.Instance.UpdateGame(game);
+                    }
 
-                    var successDialog = new Views.ModernDialog("Success", "Integrated games library has been cleared successfully.");
+                    System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var token = SettingsService.Instance.CloudAuthToken;
+                            if (!string.IsNullOrEmpty(token))
+                            {
+                                var refreshToken = SettingsService.Instance.CloudRefreshToken ?? string.Empty;
+                                var supabase = SupabaseService.Client;
+                                var restoredSession = await supabase.Auth.SetSession(token, refreshToken);
+                                if (restoredSession?.AccessToken != null) SettingsService.Instance.CloudAuthToken = restoredSession.AccessToken;
+                                if (restoredSession?.RefreshToken != null) SettingsService.Instance.CloudRefreshToken = restoredSession.RefreshToken;
+
+                                var userResponse = await supabase.Auth.GetUser(token);
+                                if (userResponse != null && !string.IsNullOrEmpty(userResponse.Id))
+                                {
+                                    var userId = userResponse.Id;
+
+                                    var userGamesResult = await supabase.From<Models.UserGameModel>().Filter("user_id", Postgrest.Constants.Operator.Equals, userId).Get();
+                                    foreach (var cg in userGamesResult.Models)
+                                    {
+                                        await supabase.From<Models.UserGameModel>().Filter("id", Postgrest.Constants.Operator.Equals, cg.Id).Delete();
+                                    }
+
+                                    var profileResult = await supabase.From<Models.ProfileModel>().Select("*").Filter("id", Postgrest.Constants.Operator.Equals, userId).Get();
+                                    var profile = profileResult.Models.FirstOrDefault();
+                                    if (profile != null)
+                                    {
+                                        profile.Rank = "THE SILENT COMMANDER";
+                                        profile.TotalPlaytime = 0;
+                                        await supabase.From<Models.ProfileModel>().Update(profile);
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Failed to clear cloud data: {ex.Message}");
+                        }
+                    });
+
+                    var profileService = new ProfileService();
+                    var localProfile = profileService.LoadProfile();
+                    localProfile.Title = "THE SILENT COMMANDER";
+                    profileService.SaveProfile(localProfile);
+
+                    var successDialog = new Views.ModernDialog("Success", "Integrated games library and cloud gameplay data have been cleared successfully.");
                     if (Application.Current?.MainWindow != null)
                         successDialog.Owner = Application.Current.MainWindow;
                     successDialog.ShowDialog();

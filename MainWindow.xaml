@@ -35,7 +35,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="#9CA3AF"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Height" Value="64"/>
             <Setter Property="Padding" Value="20,0"/>
@@ -95,6 +95,31 @@
                     <Setter Property="Background" Value="#33FF5555"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <!-- Cloud Status Icon Button Style -->
+        <Style x:Key="TopNavCloudButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#9CA3AF"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" CornerRadius="18" Background="Transparent" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#15FFFFFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!-- Steam Top Navigation Icon Button Style (Settings) -->
@@ -163,7 +188,7 @@
     </Window.Resources>
  
     <!-- Main Outer visual shell -->
-    <Border x:Name="MainShellBorder" CornerRadius="16" Background="{StaticResource CyberBackgroundGradient}" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1" ClipToBounds="True" RenderTransformOrigin="0.5,0.5">
+    <Border x:Name="MainBorder" CornerRadius="16" Background="{StaticResource CyberBackgroundGradient}" BorderBrush="{StaticResource OutlineBrush}" BorderThickness="1" ClipToBounds="True" RenderTransformOrigin="0.5,0.5">
         <Border.RenderTransform>
             <ScaleTransform ScaleX="1.0" ScaleY="1.0"/>
         </Border.RenderTransform>
@@ -191,7 +216,7 @@
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="24,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
                     <!-- logo or branding -->
-                    <TextBlock Text="LUNEX" Foreground="{StaticResource PrimaryBrush}" FontSize="18" FontWeight="Black" VerticalAlignment="Center" Margin="0,0,40,0" local:TypographyHelper.CharacterSpacing="100"/>
+                    <TextBlock Text="LUNEX" Foreground="{StaticResource PrimaryBrush}" FontSize="20" FontWeight="Black" VerticalAlignment="Center" Margin="0,0,40,0" local:TypographyHelper.CharacterSpacing="100"/>
                     
                     <!-- Navigation Menu Items -->
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -238,6 +263,41 @@
 
                 <!-- Right-aligned Settings and Profile Icons -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <!-- Cloud Status Button -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <TextBlock Text="{Binding CloudStatusText}" 
+                                   Foreground="#9CA3AF" 
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,8,0"
+                                   Visibility="{Binding ShowCloudStatusText, Converter={StaticResource BoolToVisConverter}}"/>
+                        <Button Command="{Binding ShowCloudStatusCommand}" Style="{StaticResource TopNavCloudButtonStyle}">
+                            <Grid Width="20" Height="20">
+                                <Path Data="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" 
+                                      Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
+                                      Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="1,2,1,0"/>
+                                
+                                <!-- Green Dot for Online -->
+                                <Ellipse Width="6" Height="6" Fill="#4CAF50" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-1,-1"
+                                         Visibility="{Binding IsOnline, Converter={StaticResource BoolToVisConverter}}"/>
+                                
+                                <!-- Strikethrough for Offline -->
+                                <Path Data="M1 1 L19 19" Stroke="#FF5555" StrokeThickness="2" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Path.Style>
+                                        <Style TargetType="Path">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsOnline}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Path.Style>
+                                </Path>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+
                     <!-- Settings Icon Button -->
                     <Button Command="{Binding NavigateCommand}" CommandParameter="settings" Margin="0,0,16,0" Style="{StaticResource TopNavIconButtonStyle}">
                         <Path Data="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" 
@@ -256,7 +316,7 @@
                                     BorderThickness="1.5">
                                 <TextBlock Text="{Binding ProfileInitials}" 
                                            Foreground="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType=Button}}" 
-                                           FontSize="13" 
+                                           FontSize="15" 
                                            FontWeight="Black" 
                                            HorizontalAlignment="Center" 
                                            VerticalAlignment="Center"/>
@@ -267,7 +327,8 @@
                                     CornerRadius="16" 
                                     BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource AncestorType=Button}}" 
                                     BorderThickness="1.5"
-                                    Visibility="{Binding ProfileHasDp, Converter={StaticResource BoolToVisConverter}}">
+                                    Visibility="{Binding ProfileHasDp, Converter={StaticResource BoolToVisConverter}}"
+                                    RenderOptions.BitmapScalingMode="HighQuality">
                                 <Border.Background>
                                     <ImageBrush ImageSource="{Binding ProfileDpPath}" Stretch="UniformToFill"/>
                                 </Border.Background>

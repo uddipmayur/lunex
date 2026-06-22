@@ -76,7 +76,7 @@
                        Text="INITIALIZING SYSTEM CORES..." 
                        Foreground="{StaticResource OnSurfaceVariantBrushHigh}" 
                        FontFamily="{StaticResource MonospaceFont}" 
-                       FontSize="11" 
+                       FontSize="14" 
                        HorizontalAlignment="Center" 
                        Margin="0,16,0,0" 
                        />
@@ -85,7 +85,7 @@
         <!-- Bottom Company Brand -->
         <TextBlock Text="N E X U S   R E A L M" 
                    Foreground="{StaticResource OnSurfaceVariantBrushLow}" 
-                   FontSize="10" 
+                   FontSize="12" 
                    FontWeight="Bold" 
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Bottom"

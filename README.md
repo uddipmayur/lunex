@@ -1,56 +1,137 @@
 # Lunex
 
-**Lunex** is a modern, high-performance desktop hub and media dashboard designed to centralize your game library, track play statistics, and integrate media playback in a unified, glassmorphic Windows interface. 
+A personal game library hub and media dashboard for Windows. Lunex keeps your game collection, playtime stats, and music in one place — all wrapped in a dark, glassmorphic interface that actually feels good to use.
 
-Built with premium cybernetic aesthetics, Lunex provides a sleek command center for launching games, monitoring progress, and enjoying music seamlessly.
-
----
-
-## Key Features
-
-*   **Dynamic Game Library**: Manage your local game collection, customize titles, set individual launch arguments, and view cover and icon art.
-*   **Persistent Web Media Hub**: Integrated Chromium-based music view supporting web players (like YouTube and Spotify). Media state is persistent, allowing playback to continue uninterrupted while navigating to other views.
-*   **Playtime & Usage Tracker**: Automatically monitors and records session durations, total play minutes, and last played timestamps for all games in the library.
-*   **Customizable Shell Profiles**: Customize profile details in a central user hub.
-*   **Background Self-Updater**: A silent background updater checks for and applies update binaries on application startup, ensuring the shell is always running the latest version.
-*   **Single-Instance Architecture**: Automatically detects duplicate launches, prevents multiple processes, and brings the active window to the front.
+![Game Library](assets/screenshots/library.png)
 
 ---
 
-## Technical Stack & Requirements
+## What it does
 
-Lunex is a native Windows desktop client designed with a lightweight footprint and modern architecture.
-
-*   **Framework**: WPF (Windows Presentation Foundation) & Windows Forms
-*   **Target Runtime**: .NET 9.0 (built as a self-contained `win-x64` executable)
-*   **Web Engine**: Microsoft Edge WebView2 (Chromium-based rendering)
-*   **System Requirements**: Windows 10 / Windows 11 (64-bit) with Microsoft Edge WebView2 runtime installed.
+- **Game library** — Add any game from any platform. Set custom names, launch arguments, cover art, and icon. One click to launch.
+- **Playtime tracking** — Every session is timed automatically. Tracks total hours, last played, and session history per game.
+- **Built-in music view** — Chromium-powered web view that keeps playing music while you navigate to other parts of the app. Spotify, YouTube, whatever.
+- **Cloud auth & sync** — Securely log in to back up your game library and statistics to the cloud for automatic synchronization across devices.
+- **Background operation** — Can launch directly to the system tray on PC startup, and minimize itself to the tray automatically while a game is running.
+- **Profile hub** — Customize your display name and profile details. Nothing fancy, just a central place for your info.
+- **Background auto-updater** — Checks for updates silently on launch. Downloads the installer in the background. Prompts you when it's ready.
+- **Single-instance enforcement** — Opening Lunex while it's already running just brings the existing window to the front instead of spawning a second process.
 
 ---
 
-## Development & Packaging
+## Screenshots
 
-Authorized developers can compile and package the application using the built-in publishing workflow:
+| Library | Stats |
+|---|---|
+| ![Library view](assets/screenshots/library.png) | ![Stats view](assets/screenshots/stats.png) |
 
-1.  **Prerequisites**:
-    *   .NET 9.0 SDK
+---
 
+## Running locally
+
+**Prerequisites:**
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (For devlopement only)
+- Windows 10 or 11 (64-bit)
+- Microsoft Edge WebView2 runtime (comes pre-installed on Windows 11; [download here](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) for Windows 10)
+
+**Clone and run:**
+
+```bash
+git clone https://github.com/uddipmayur/lunex.git
+cd lunex
+dotnet run
+```
+
+That's it. No database setup, no environment variables, no external config files. On first launch, Lunex creates its data files automatically under `%APPDATA%\Lunex`.
+
+> **Note:** `dotnet run` builds and starts the debug build. For a proper self-contained release build, see the Packaging section below.
+
+---
+
+## How the updater works
+
+On every startup, Lunex fires a background task that checks a Supabase table for the latest version. This happens off the UI thread so it never blocks or delays the window from opening.
+
+Here's the flow:
+
+1. Fetches the latest version entry from the database (version string + installer download URL).
+2. Compares it against the current embedded version (`UpdateService.CurrentVersion`).
+3. If there's a newer version, it checks `%TEMP%\LunexUpdates\` for an already-downloaded installer.
+   - If a valid installer is already cached (correct PE headers, correct version, correct file size), it skips the download entirely and marks the update as ready.
+   - Otherwise, it downloads the installer in the background with progress tracking.
+4. Once downloaded, the app prompts the user. On confirmation, it launches the installer and exits cleanly.
+
+If the app is already on the latest version, any stale installer files left in `%TEMP%\LunexUpdates\` are deleted automatically.
+
+**DNS fallback:** Some ISPs block Supabase domains. The updater handles this by falling back to Google's DNS-over-HTTPS resolver (`8.8.8.8`) if a standard DNS lookup fails. This is handled transparently — users never see an error about it.
+
+---
+
+## How single-instance works
+
+Lunex uses a named Win32 `Mutex` to detect if another instance is already running. If a duplicate launch is detected:
+
+1. The new process signals the existing instance via a named `EventWaitHandle`.
+2. The existing instance receives the signal and calls `ShowWindow()` to bring itself to the front.
+3. The duplicate process shuts down immediately — no window ever appears.
+
+This avoids the usual problem of multiple overlapping app windows when a user accidentally double-launches.
+
+---
+
+## Data storage
+
+User data is managed locally in `%APPDATA%\Lunex` and optionally synced to the cloud via the built-in authentication system.
+
+| File | Contents |
+|---|---|
+| `lunex_settings.json` | App settings (theme, launch behavior, etc.) |
+| `lunex_games.json` | Your game library with metadata and playtime |
+| `lunex_profile.json` | Profile name and display info |
+
+These files are never tracked by Git.
+
+---
+
+## Packaging
+
+To build a self-contained installer:
+
+```powershell
+dotnet publish -c Release -r win-x64 --self-contained true
+```
+
+This compiles a self-contained `win-x64` release build.
+
+**Prerequisites for packaging:**
+- .NET 9.0 SDK
+- [Inno Setup 6](https://jrsoftware.org/isinfo.php)
+- A valid code-signing certificate (PFX file — not included in the repo)
+
+---
+
+## Tech stack
+
+| Layer | What's used |
+|---|---|
+| UI framework | WPF (Windows Presentation Foundation) |
+| Forms interop | Windows Forms (for system tray and some dialogs) |
+| Target runtime | .NET 9.0, self-contained `win-x64` |
+| Web rendering | Microsoft Edge WebView2 (Chromium) |
+| Update backend | Supabase (Postgres REST API) |
+
+---
+
+## Security notes
+
+**Git exclusions** — `bin/`, `obj/`, `.vs/`, IDE setting files, and all `*.user` files are excluded via `.gitignore`. Build artifacts never end up in the repo.
+
+**Local data** — All game libraries, profiles, and settings stay on-device in `%APPDATA%\Lunex`. Nothing user-specific is committed.
+
+**API credentials** — The Supabase key in `UpdateService.cs` is a public `anon` role key. It is intentionally client-facing and safe to commit. Do not replace it with a `service_role` or admin key. Never commit private secrets.
+
+---
 
 ## License
 
-This project is licensed under the **MIT License** 
-
-Copyright (c) 2026 **Nexus Realm**. All rights reserved.
-
----
-
-## Security & Secrets Management
-
-To keep this repository secure before pushing to GitHub, the following measures are active:
-
-1. **Git Exclusions (.gitignore)**: A `.gitignore` file is configured in the root directory to prevent local build artifacts (`bin/`, `obj/`), IDE state/settings (`.vs/`, `.vscode/`, `*.user`), and temporary files from being tracked or pushed.
-2. **Local Settings Storage**: All local user configurations, custom game libraries, and profile databases (`lunex_settings.json`, `lunex_profile.json`, `lunex_games.json`) are stored dynamically in the user's `%APPDATA%\Lunex` folder. They are completely decoupled from the project codebase and will not be pushed to GitHub.
-3. **API Keys and Public Tokens**:
-    * The Supabase credentials located in [UpdateService.cs] use the public anonymous (`anon`) role key. This token is designed to be client-side facing and is safe to commit.
-    * **WARNING**: Never replace this with a Supabase `service_role` or admin key, or commit any other private secrets. Always verify code changes for raw credentials before pushing.
-
+MIT License — Copyright (c) 2026 Nexus Realm

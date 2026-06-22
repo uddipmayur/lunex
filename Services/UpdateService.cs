@@ -24,16 +24,20 @@ namespace Lunex.Services
 
         [JsonPropertyName("release_notes")]
         public string? ReleaseNotes { get; set; }
+
+        [JsonPropertyName("bug_fixes")]
+        public string? BugFixes { get; set; }
     }
 
     public class UpdateService : INotifyPropertyChanged
     {
         // Supabase credentials - do not commit admin keys here you absolute donuts
-        private const string SupabaseUrl = "https://pninyimsisdrmnnbkxew.supabase.co";
-        private const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuaW55aW1zaXNkcm1ubmJreGV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMTcxNjgsImV4cCI6MjA5NTY5MzE2OH0.njFZe7fjhvyIOubezn-xFNlIGfTUYXgC5V1hEOGfsBA";
+        private const string SupabaseUrl = "https://qhihazzhrtiiwphtinpj.supabase.co";
+        private const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWhhenpocnRpaXdwaHRpbnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTMxOTEsImV4cCI6MjA5NzY2OTE5MX0.xgNLwwsZG7U6hevffRXfnHkYsufDrcrS9VUuANRtoYw";
+
         private const string TableEndpoint = "/rest/v1/app_updates?select=*&order=id.desc&limit=1";
 
-        public const string CurrentVersion = "7.3.6";
+        public const string CurrentVersion = "7.5.11";
 
         // Single instance of updater so we don't spam database connections
         private static readonly Lazy<UpdateService> _instance = new(() => new UpdateService());
@@ -49,7 +53,7 @@ namespace Lunex.Services
 
                 // DO NOT FUCKING TOUCH THIS OR DOH RESOLVER BYPASS BREAKS!
                 // Some users' ISPs block Supabase domains, so if standard DNS lookup fails, we fall back to Google DoH (8.8.8.8)
-                if (host.Equals("pninyimsisdrmnnbkxew.supabase.co", StringComparison.OrdinalIgnoreCase))
+                if (host.Equals("qhihazzhrtiiwphtinpj.supabase.co", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -323,7 +327,14 @@ namespace Lunex.Services
             }
             catch (Exception ex)
             {
-                StatusText = $"Check failed: {ex.Message}";
+                if (ex is System.Net.Sockets.SocketException || ex is HttpRequestException || ex.Message.Contains("host is known"))
+                {
+                    StatusText = "Check failed: No internet connection.";
+                }
+                else
+                {
+                    StatusText = $"Check failed: {ex.Message}";
+                }
                 Console.WriteLine($"[UpdateService] Manual check failed: {ex.Message}");
                 return false;
             }
@@ -631,6 +642,43 @@ namespace Lunex.Services
                 Console.WriteLine($"[UpdateService] Error getting remote file size: {ex.Message}");
             }
             return -1L;
+        }
+
+        public static string? GetPendingUpdateInstaller()
+        {
+            try
+            {
+                var tempDir = Path.Combine(Path.GetTempPath(), "LunexUpdates");
+                if (!Directory.Exists(tempDir)) return null;
+
+                foreach (var file in Directory.GetFiles(tempDir, "*.exe"))
+                {
+                    if (IsValidPeFile(file))
+                    {
+                        var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(file);
+                        var fileVersion = versionInfo.FileVersion?.Trim();
+                        var prodVersion = versionInfo.ProductVersion?.Trim();
+                        
+                        string? versionToCompare = null;
+                        if (!string.IsNullOrEmpty(prodVersion)) versionToCompare = prodVersion;
+                        else if (!string.IsNullOrEmpty(fileVersion)) versionToCompare = fileVersion;
+
+                        if (versionToCompare != null)
+                        {
+                            var cleanVersion = CleanVersionString(versionToCompare);
+                            if (IsNewerVersion(cleanVersion, CurrentVersion))
+                            {
+                                return file;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UpdateService] Error checking for pending update: {ex.Message}");
+            }
+            return null;
         }
 
         private static string CleanVersionString(string version)

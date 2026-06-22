@@ -161,13 +161,12 @@ namespace Lunex.ViewModels
                 FilteredGames.Add(game);
             }
 
-            // Determine the Hero card: assign to the game with the highest total play time (PlayTimeMinutes).
-            // If all games are unplayed (0 minutes), fall back to pinning the first item in the current sorted list.
-            var hero = FilteredGames.OrderByDescending(g => g.PlayTimeMinutes).FirstOrDefault();
-            if (hero != null && hero.PlayTimeMinutes == 0)
-            {
-                hero = FilteredGames.FirstOrDefault();
-            }
+            // Determine the Hero card globally: assign to the game with the highest total play time (PlayTimeMinutes) in the entire library.
+            // If all games are unplayed (0 minutes), fall back to the first alphabetical name game.
+            var hero = _allGames
+                .OrderByDescending(g => g.PlayTimeMinutes)
+                .ThenBy(g => g.Title, StringComparer.OrdinalIgnoreCase)
+                .FirstOrDefault();
 
             foreach (var game in FilteredGames)
             {
@@ -194,10 +193,14 @@ namespace Lunex.ViewModels
                 var filePath = dialog.FileName;
                 var fileName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
+                var normalizedName = new string(fileName.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+                if (string.IsNullOrEmpty(normalizedName)) normalizedName = Guid.NewGuid().ToString("N");
+                var gameId = "game_" + normalizedName;
+
                 // Add to list and save
                 var newGame = new Game
                 {
-                    Id = DateTime.Now.Ticks.ToString(),
+                    Id = gameId,
                     Title = fileName,
                     ExePath = filePath,
                     CoverPath = null,
