@@ -249,6 +249,10 @@ namespace Lunex.ViewModels
                         {
                             if (!string.IsNullOrEmpty(profileRow.Username)) fetchedUsername = profileRow.Username;
                             if (!string.IsNullOrEmpty(profileRow.Rank)) fetchedRank = profileRow.Rank;
+                            if (!string.IsNullOrEmpty(profileRow.RawgApiKey))
+                            {
+                                SettingsService.Instance.RawgApiKey = profileRow.RawgApiKey;
+                            }
                         }
 
                         Application.Current?.Dispatcher.Invoke(() =>

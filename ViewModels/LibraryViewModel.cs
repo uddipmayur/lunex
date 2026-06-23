@@ -179,7 +179,7 @@ namespace Lunex.ViewModels
         public bool IsLibraryEmpty => FilteredGames.Count == 0;
 
 
-        private void ExecuteAddGame()
+        private async void ExecuteAddGame()
         {
             // Open standard Win32 File Dialog to select exe
             var dialog = new OpenFileDialog
@@ -211,6 +211,32 @@ namespace Lunex.ViewModels
                 _allGames.Add(newGame);
                 _libraryService.SaveGames(_allGames);
                 RefreshInstalledGames();
+
+                // Fetch RAWG metadata asynchronously so we don't block UI
+                try
+                {
+                    var rawgData = await RawgApiService.Instance.SearchGameAsync(fileName);
+                    if (rawgData != null)
+                    {
+                        newGame.RawgId = rawgData.Id;
+                        newGame.Description = rawgData.DescriptionRaw;
+                        newGame.Rating = rawgData.Rating;
+                        newGame.ReleaseDate = rawgData.Released;
+                        newGame.Developer = rawgData.Developers?.FirstOrDefault()?.Name;
+                        newGame.Publisher = rawgData.Publishers?.FirstOrDefault()?.Name;
+
+                        if (!string.IsNullOrEmpty(rawgData.BackgroundImage))
+                        {
+                            await _libraryService.CacheRemoteImageAsync(newGame, rawgData.BackgroundImage);
+                        }
+                        
+                        _libraryService.UpdateGame(newGame);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error fetching RAWG details: {ex.Message}");
+                }
             }
         }
     }

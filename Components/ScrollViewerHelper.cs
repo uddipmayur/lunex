@@ -67,8 +67,8 @@ namespace Lunex.Components
                 }
                 else
                 {
-                    // For pixel scrolling, scroll by pixels (e.g., 120 pixels per notch)
-                    double scrollSpeed = 1.0;
+                    // For pixel scrolling, scroll by pixels
+                    double scrollSpeed = 3.0;
                     increment = delta * scrollSpeed;
                 }
 
@@ -89,7 +89,7 @@ namespace Lunex.Components
             }
             
             double currentTarget = (double)localVal;
-            if (Math.Abs(currentTarget - scrollViewer.VerticalOffset) > 150)
+            if (Math.Abs(currentTarget - scrollViewer.VerticalOffset) > 300)
             {
                 return scrollViewer.VerticalOffset;
             }
@@ -106,7 +106,7 @@ namespace Lunex.Components
             var animation = new DoubleAnimation
             {
                 To = targetOffset,
-                Duration = TimeSpan.FromMilliseconds(350),
+                Duration = TimeSpan.FromMilliseconds(200),
                 DecelerationRatio = 0.8
             };
 

@@ -14,6 +14,7 @@ namespace Lunex.Services
         public string? CloudAuthToken { get; set; }
         public string? CloudRefreshToken { get; set; }
         public bool SkipLoginOnStartup { get; set; } = false;
+        public string? RawgApiKey { get; set; }
     }
 
     public class SettingsService : INotifyPropertyChanged
@@ -153,6 +154,20 @@ namespace Lunex.Services
                 if (_data.SkipLoginOnStartup != value)
                 {
                     _data.SkipLoginOnStartup = value;
+                    OnPropertyChanged();
+                    SaveSettings();
+                }
+            }
+        }
+
+        public string? RawgApiKey
+        {
+            get => _data.RawgApiKey;
+            set
+            {
+                if (_data.RawgApiKey != value)
+                {
+                    _data.RawgApiKey = value;
                     OnPropertyChanged();
                     SaveSettings();
                 }

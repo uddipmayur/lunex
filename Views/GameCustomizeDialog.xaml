@@ -6,7 +6,7 @@
         xmlns:components="clr-namespace:Lunex.Components"
         mc:Ignorable="d"
         Title="Customize Game"
-        Height="460" Width="550"
+        Height="520" Width="550"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -150,7 +150,9 @@
                 <!-- Game Title Section -->
                 <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,16">
                     <TextBlock Text="GAME TITLE" Foreground="#B3C7C4D8" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
-                    <TextBox x:Name="TxtGameTitle" Style="{StaticResource SunkenSearchBox}" Height="38" VerticalContentAlignment="Center" CaretBrush="{StaticResource PrimaryBrush}"/>
+                    <TextBox x:Name="TxtGameTitle" Style="{StaticResource SunkenSearchBox}" Height="38" VerticalContentAlignment="Center" CaretBrush="{StaticResource PrimaryBrush}" Margin="0,0,0,16"/>
+                    <TextBlock Text="RAWG SYNC ID / SLUG (Optional)" Foreground="#B3C7C4D8" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <TextBox x:Name="TxtRawgId" Style="{StaticResource SunkenSearchBox}" Height="38" VerticalContentAlignment="Center" CaretBrush="{StaticResource PrimaryBrush}" ToolTip="Enter the exact RAWG ID or URL slug (e.g., cyberpunk-2077) to force sync specific metadata."/>
                 </StackPanel>
 
                 <!-- Custom Elements Column Layout -->

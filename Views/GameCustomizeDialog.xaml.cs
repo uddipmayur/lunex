@@ -15,6 +15,7 @@ namespace Lunex.Views
         private readonly Game _game;
         private string? _tempCoverPath;
         private string? _tempIconPath;
+        private bool _tempHasCustomCover; // tracks whether the pending cover is manually chosen
         private bool? _pendingDialogResult;
         private bool _isCloseAnimationCompleted = false;
 
@@ -27,6 +28,7 @@ namespace Lunex.Views
             TxtGameTitle.Text = game.Title;
             _tempCoverPath = game.CoverPath;
             _tempIconPath = game.IconPath;
+            _tempHasCustomCover = game.HasCustomCover;
 
             UpdatePreviews();
         }
@@ -134,6 +136,7 @@ namespace Lunex.Views
             if (dialog.ShowDialog() == true)
             {
                 _tempCoverPath = dialog.FileName;
+                _tempHasCustomCover = true; // user picked a local file — protect from RAWG overwrite
                 UpdatePreviews();
             }
         }
@@ -141,6 +144,7 @@ namespace Lunex.Views
         private void ClearCover_Click(object sender, RoutedEventArgs e)
         {
             _tempCoverPath = null;
+            _tempHasCustomCover = false; // cover cleared — RAWG may fill it again on next sync
             UpdatePreviews();
         }
 
@@ -175,14 +179,69 @@ namespace Lunex.Views
                 return;
             }
 
+            bool titleChanged = _game.Title != title;
+            var rawgIdInput = TxtRawgId.Text.Trim();
+            bool forceRawgSync = !string.IsNullOrEmpty(rawgIdInput);
+
             // Update local model
             _game.Title = title;
             _game.CoverPath = _tempCoverPath;
             _game.IconPath = _tempIconPath;
+            _game.HasCustomCover = _tempHasCustomCover; // commit the custom-cover flag before RAWG sync fires
 
             // Save to service
             var libraryService = Services.LibraryService.Instance;
-            libraryService.UpdateGame(_game);
+            
+            if (titleChanged || forceRawgSync)
+            {
+                System.Threading.Tasks.Task.Run(async () =>
+                {
+                    try
+                    {
+                        Lunex.Models.RawgGameDetails? rawgData = null;
+                        if (forceRawgSync)
+                        {
+                            rawgData = await Services.RawgApiService.Instance.GetGameByIdAsync(rawgIdInput);
+                        }
+                        else
+                        {
+                            rawgData = await Services.RawgApiService.Instance.SearchGameAsync(title);
+                        }
+                        
+                        if (rawgData != null)
+                        {
+                            _game.RawgId = rawgData.Id;
+                            _game.Description = rawgData.DescriptionRaw;
+                            _game.Rating = rawgData.Rating;
+                            _game.ReleaseDate = rawgData.Released;
+                            _game.Developer = rawgData.Developers?.FirstOrDefault()?.Name;
+                            _game.Publisher = rawgData.Publishers?.FirstOrDefault()?.Name;
+
+                            if (!string.IsNullOrEmpty(rawgData.BackgroundImage))
+                            {
+                                await libraryService.CacheRemoteImageAsync(_game, rawgData.BackgroundImage);
+                            }
+                        }
+                        
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            libraryService.UpdateGame(_game);
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error fetching RAWG details on rename: {ex.Message}");
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            libraryService.UpdateGame(_game);
+                        });
+                    }
+                });
+            }
+            else
+            {
+                libraryService.UpdateGame(_game);
+            }
 
             CloseWithAnimation(true);
         }

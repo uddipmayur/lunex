@@ -42,12 +42,28 @@ namespace Lunex.ViewModels
             set => SetProperty(ref _activeDirectory, value);
         }
 
+        public bool IsLoggedIn => !string.IsNullOrEmpty(SettingsService.Instance.CloudAuthToken);
+
+        public string? RawgApiKey
+        {
+            get => SettingsService.Instance.RawgApiKey;
+            set
+            {
+                if (SettingsService.Instance.RawgApiKey != value)
+                {
+                    SettingsService.Instance.RawgApiKey = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         // ── Commands ─────────────────────────────────────────────────────────
         public ICommand ClearCommand { get; }
         public ICommand CheckForUpdatesCommand { get; }
         public ICommand InstallUpdateCommand { get; }
         public ICommand OpenPrivacyPolicyCommand { get; }
         public ICommand OpenTermsOfServiceCommand { get; }
+        public ICommand SaveRawgApiKeyCommand { get; }
 
         // Raised on the calling thread when Check for Updates confirms no update is available.
         // The View subscribes and shows the dialog (proper MVVM separation).
@@ -99,12 +115,48 @@ namespace Lunex.ViewModels
             });
             OpenPrivacyPolicyCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/privacy-policy"));
             OpenTermsOfServiceCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/terms-of-service"));
+            SaveRawgApiKeyCommand = new RelayCommand(async () =>
+            {
+                var token = SettingsService.Instance.CloudAuthToken;
+                if (!string.IsNullOrEmpty(token))
+                {
+                    try
+                    {
+                        var supabase = SupabaseService.Client;
+                        var userResponse = await supabase.Auth.GetUser(token);
+                        if (userResponse != null && !string.IsNullOrEmpty(userResponse.Id))
+                        {
+                            var profileResult = await supabase.From<Models.ProfileModel>().Select("*").Filter("id", Postgrest.Constants.Operator.Equals, userResponse.Id).Get();
+                            var profile = profileResult.Models.FirstOrDefault();
+                            if (profile != null)
+                            {
+                                profile.RawgApiKey = SettingsService.Instance.RawgApiKey;
+                                await supabase.From<Models.ProfileModel>().Update(profile);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to sync RAWG API Key to Supabase: {ex.Message}");
+                    }
+                }
+                
+                var dialog = new Views.ModernDialog("API Key Saved", "RAWG API Key has been saved successfully.");
+                if (Application.Current?.MainWindow != null)
+                {
+                    dialog.Owner = Application.Current.MainWindow;
+                }
+                dialog.ShowDialog();
+            });
 
             // Forward PropertyChanged from SettingsService to view bindings
             SettingsService.Instance.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName != null)
                     OnPropertyChanged(e.PropertyName);
+                
+                if (e.PropertyName == nameof(SettingsService.Instance.CloudAuthToken))
+                    OnPropertyChanged(nameof(IsLoggedIn));
             };
 
             // Forward PropertyChanged from UpdateService to view bindings

@@ -37,7 +37,7 @@ namespace Lunex.Services
 
         private const string TableEndpoint = "/rest/v1/app_updates?select=*&order=id.desc&limit=1";
 
-        public const string CurrentVersion = "7.5.11";
+        public const string CurrentVersion = "7.6.3";
 
         // Single instance of updater so we don't spam database connections
         private static readonly Lazy<UpdateService> _instance = new(() => new UpdateService());

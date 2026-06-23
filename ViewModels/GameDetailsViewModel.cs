@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using Lunex.Models;
 using Lunex.Services;
@@ -19,12 +20,31 @@ namespace Lunex.ViewModels
         public string Title => _game.Title.ToUpperInvariant();
         public string ExePath => _game.ExePath;
         public string? CoverPath => _game.CoverPath;
+        public string? Description => _game.Description;
+        public double Rating => _game.Rating;
+        public string? ReleaseDate => _game.ReleaseDate;
+        public string? Developer => _game.Developer;
+        public string? Publisher => _game.Publisher;
+        public string? BackgroundImagePath => _game.BackgroundImagePath;
 
         private string _launchArguments;
         public string LaunchArguments
         {
             get => _launchArguments;
             set => SetProperty(ref _launchArguments, value);
+        }
+
+        public bool IsLoggedIn => !string.IsNullOrEmpty(SettingsService.Instance.CloudAuthToken);
+        public bool NeedsLogin => !IsLoggedIn;
+
+        public bool HasRawgApiKey => IsLoggedIn && !string.IsNullOrEmpty(SettingsService.Instance.RawgApiKey);
+        public bool NeedsRawgApiKey => IsLoggedIn && !HasRawgApiKey;
+
+        private string _rawgApiKeyInput = string.Empty;
+        public string RawgApiKeyInput
+        {
+            get => _rawgApiKeyInput;
+            set => SetProperty(ref _rawgApiKeyInput, value);
         }
 
         public bool IsInstalling
@@ -99,6 +119,7 @@ namespace Lunex.ViewModels
         public ICommand SaveArgsCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand OpenDirectoryCommand { get; }
+        public ICommand SaveRawgApiKeyCommand { get; }
 
         public GameDetailsViewModel(MainViewModel mainVm, Game game)
         {
@@ -150,6 +171,40 @@ namespace Lunex.ViewModels
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error opening directory: {ex.Message}");
+                }
+            });
+
+            SaveRawgApiKeyCommand = new RelayCommand(async () =>
+            {
+                if (string.IsNullOrWhiteSpace(RawgApiKeyInput)) return;
+                
+                SettingsService.Instance.RawgApiKey = RawgApiKeyInput.Trim();
+                OnPropertyChanged(nameof(HasRawgApiKey));
+                OnPropertyChanged(nameof(NeedsRawgApiKey));
+
+                // Optionally push to Supabase in the background
+                var token = SettingsService.Instance.CloudAuthToken;
+                if (!string.IsNullOrEmpty(token))
+                {
+                    System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var supabase = SupabaseService.Client;
+                            var userResponse = await supabase.Auth.GetUser(token);
+                            if (userResponse != null && !string.IsNullOrEmpty(userResponse.Id))
+                            {
+                                var profileResult = await supabase.From<Models.ProfileModel>().Select("*").Filter("id", Postgrest.Constants.Operator.Equals, userResponse.Id).Get();
+                                var profile = profileResult.Models.FirstOrDefault();
+                                if (profile != null)
+                                {
+                                    profile.RawgApiKey = SettingsService.Instance.RawgApiKey;
+                                    await supabase.From<Models.ProfileModel>().Update(profile);
+                                }
+                            }
+                        }
+                        catch { }
+                    });
                 }
             });
 
@@ -299,6 +354,12 @@ namespace Lunex.ViewModels
         {
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(CoverPath));
+            OnPropertyChanged(nameof(Description));
+            OnPropertyChanged(nameof(Rating));
+            OnPropertyChanged(nameof(ReleaseDate));
+            OnPropertyChanged(nameof(Developer));
+            OnPropertyChanged(nameof(Publisher));
+            OnPropertyChanged(nameof(BackgroundImagePath));
             OnPropertyChanged(nameof(LaunchArguments));
             OnPropertyChanged(nameof(IsInstalled));
             OnPropertyChanged(nameof(StatusText));

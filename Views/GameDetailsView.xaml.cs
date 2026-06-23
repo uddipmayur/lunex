@@ -36,6 +36,7 @@ namespace Lunex.Views
             }
         }
 
+
         private void UpdateMedia(GameDetailsViewModel detailVm)
         {
             var coverPath = detailVm.CoverPath;

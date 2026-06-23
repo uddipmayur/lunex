@@ -36,5 +36,8 @@ namespace Lunex.Models
 
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
+
+        [Column("rawg_api_key")]
+        public string? RawgApiKey { get; set; }
     }
 }

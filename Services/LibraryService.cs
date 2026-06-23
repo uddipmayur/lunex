@@ -87,6 +87,41 @@ namespace Lunex.Services
 
         public void LaunchGame(Game game)
         {
+            // Try fetching missing metadata on launch
+            if (!game.RawgId.HasValue || string.IsNullOrEmpty(game.Description))
+            {
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        var rawgData = await RawgApiService.Instance.SearchGameAsync(game.Title);
+                        if (rawgData != null)
+                        {
+                            game.RawgId = rawgData.Id;
+                            game.Description = rawgData.DescriptionRaw;
+                            game.Rating = rawgData.Rating;
+                            game.ReleaseDate = rawgData.Released;
+                            game.Developer = rawgData.Developers?.FirstOrDefault()?.Name;
+                            game.Publisher = rawgData.Publishers?.FirstOrDefault()?.Name;
+
+                            if (!string.IsNullOrEmpty(rawgData.BackgroundImage))
+                            {
+                                await CacheRemoteImageAsync(game, rawgData.BackgroundImage);
+                            }
+                            
+                            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                UpdateGame(game);
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error fetching RAWG details on launch: {ex.Message}");
+                    }
+                });
+            }
+
             // update timestamp so users can see how much life they wasted
             game.LastPlayed = DateTime.Now;
             GameUpdated?.Invoke(game);
@@ -268,6 +303,65 @@ namespace Lunex.Services
             }
         }
 
+        public async Task CacheRemoteImageAsync(Game game, string imageUrl, bool overwriteCover = true)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl)) return;
+
+            var cacheDir = Path.Combine(_appDataDir, "Cache");
+            if (!Directory.Exists(cacheDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(cacheDir);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error creating cache directory: {ex.Message}");
+                    return;
+                }
+            }
+
+            try
+            {
+                var imageBytes = await RawgApiService.Instance.DownloadImageAsync(imageUrl);
+                if (imageBytes != null && imageBytes.Length > 0)
+                {
+                    var ext = ".jpg"; // RAWG usually returns jpg or png, default to jpg for saving
+                    var destPath = Path.Combine(cacheDir, $"{game.Id}_bg{ext}");
+                    await File.WriteAllBytesAsync(destPath, imageBytes);
+                    game.BackgroundImagePath = destPath;
+
+                    // Always overwrite the cover when coming from a RAWG sync (overwriteCover=true).
+                    // CoverPath was non-empty. Now we delete the old cached file and replace it.
+                    // EXCEPTION: if the user manually chose a cover via Customize dialog
+                    // (HasCustomCover=true), never touch it — RAWG must not clobber user choices.
+                    bool shouldUpdateCover = (overwriteCover || string.IsNullOrEmpty(game.CoverPath))
+                                            && !game.HasCustomCover;
+
+                    if (shouldUpdateCover)
+                    {
+                        var coverDestPath = Path.Combine(cacheDir, $"{game.Id}_cover{ext}");
+
+                        // Delete old stale cached cover if it exists and differs from the new path
+                        if (!string.IsNullOrEmpty(game.CoverPath) &&
+                            game.CoverPath != coverDestPath &&
+                            File.Exists(game.CoverPath))
+                        {
+                            try { File.Delete(game.CoverPath); } catch { }
+                        }
+
+                        await File.WriteAllBytesAsync(coverDestPath, imageBytes);
+                        game.CoverPath = coverDestPath;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error caching remote image: {ex.Message}");
+            }
+        }
+
+
         // DO NOT TOUCH. Deletes cached covers/icons of games that were removed from the library to prevent user storage leakage.
         private void PruneOrphanedImages(List<Game> games)
         {
@@ -288,6 +382,10 @@ namespace Lunex.Services
                         else if (fileName.Contains("_icon."))
                         {
                             gameId = fileName.Substring(0, fileName.IndexOf("_icon."));
+                        }
+                        else if (fileName.Contains("_bg."))
+                        {
+                            gameId = fileName.Substring(0, fileName.IndexOf("_bg."));
                         }
 
                         if (!string.IsNullOrEmpty(gameId))

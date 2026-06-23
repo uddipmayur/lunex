@@ -8,7 +8,7 @@ A personal game library hub and media dashboard for Windows. Lunex keeps your ga
 
 ## What it does
 
-- **Game library** — Add any game from any platform. Set custom names, launch arguments, cover art, and icon. One click to launch.
+- **Game library** — Add any game from any platform. Automatically fetches rich game metadata from the RAWG API. Set custom names, launch arguments, cover art, and icon. One click to launch.
 - **Playtime tracking** — Every session is timed automatically. Tracks total hours, last played, and session history per game.
 - **Built-in music view** — Chromium-powered web view that keeps playing music while you navigate to other parts of the app. Spotify, YouTube, whatever.
 - **Cloud auth & sync** — Securely log in to back up your game library and statistics to the cloud for automatic synchronization across devices.

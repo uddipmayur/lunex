@@ -79,6 +79,37 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Ghost action button style -->
+        <Style x:Key="GhostButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#99C7C4D8"/>
+            <Setter Property="BorderBrush" Value="#22FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="7"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#0FFFFFFF"/>
+                                <Setter TargetName="b" Property="BorderBrush" Value="#44FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#05FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <UserControl.RenderTransform>
@@ -93,7 +124,7 @@
 
     <Grid Background="Transparent">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Vertical" Background="Transparent">
                 
                 <!-- 1. Cinematic Hero Banner Panel -->
                 <Grid Height="574" Background="#1B1B1E">
@@ -184,7 +215,7 @@
                     <!-- Left Column details -->
                     <StackPanel Grid.Column="0" Orientation="Vertical">
                         <!-- Weekly Activity card -->
-                        <components:GlassPanel CornerRadius="12" Padding="20">
+                        <components:GlassPanel CornerRadius="12" Padding="20" Margin="0,0,0,20">
                             <StackPanel Orientation="Vertical">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -215,6 +246,88 @@
                                          </DataTemplate>
                                      </ItemsControl.ItemTemplate>
                                  </ItemsControl>
+                            </StackPanel>
+                        </components:GlassPanel>
+
+                        <!-- About the Game card -->
+                        <components:GlassPanel CornerRadius="12" Padding="20">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <Path Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" 
+                                          Fill="{StaticResource OnSurfaceVariantBrushHigh}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
+                                    <TextBlock Text="ABOUT THE GAME" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                                <!-- Cloud Login Prompt (Shown when not logged in) -->
+                                <StackPanel Orientation="Vertical" Visibility="{Binding NeedsLogin, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,8,0,0">
+                                    <TextBlock Text="Authentication Required" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Please log in to your Lunex cloud account from the settings to sync and load rich game details." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,12" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- RAWG API Key Prompt (Shown when missing) -->
+                                <StackPanel Orientation="Vertical" Visibility="{Binding NeedsRawgApiKey, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,8,0,0">
+                                    <TextBlock Text="Authenticate RAWG API" Foreground="White" FontSize="15" FontWeight="Bold"/>
+                                    <TextBlock Text="Paste your RAWG API key to automatically fetch rich game metadata and cover arts." Foreground="#B3C7C4D8" FontSize="13" Margin="0,3,0,12" TextWrapping="Wrap"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBox Grid.Column="0" 
+                                                 Style="{StaticResource SunkenSearchBox}"
+                                                 Text="{Binding RawgApiKeyInput, UpdateSourceTrigger=PropertyChanged}"
+                                                 Tag="Paste auth code"
+                                                 CaretBrush="{StaticResource PrimaryBrush}"
+                                                 FontSize="13" 
+                                                 FontFamily="{StaticResource MonospaceFont}" 
+                                                 VerticalAlignment="Center"/>
+                                        
+                                        <Button Grid.Column="1" 
+                                                Command="{Binding SaveRawgApiKeyCommand}"
+                                                Style="{StaticResource GhostButtonStyle}"
+                                                Padding="20,10" Margin="12,0,0,0">
+                                            <TextBlock Text="Submit" FontSize="13" FontWeight="Bold" Foreground="#99C7C4D8" VerticalAlignment="Center"/>
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+
+                                <!-- Game Details Content (Shown when API key exists) -->
+                                <StackPanel Orientation="Vertical" Visibility="{Binding HasRawgApiKey, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <Grid Margin="0,0,0,16" Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToCollapsedConverter}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="12"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="RELEASED:" Foreground="#888" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ReleaseDate, TargetNullValue='Unknown'}" Foreground="#FFF" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="RATING:" Foreground="#888" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Rating, StringFormat={}{0:0.0} / 5.0}" Foreground="#FFF" FontSize="13" VerticalAlignment="Center"/>
+                                        
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="DEVELOPER:" Foreground="#888" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Developer, TargetNullValue='Unknown'}" Foreground="#FFF" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                        
+                                        <TextBlock Grid.Row="2" Grid.Column="2" Text="PUBLISHER:" Foreground="#888" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding Publisher, TargetNullValue='Unknown'}" Foreground="#FFF" FontSize="13" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Text="{Binding Description}" 
+                                               Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToCollapsedConverter}}"
+                                               Foreground="#DDE2E8" 
+                                               FontSize="13.5" 
+                                               TextWrapping="Wrap" 
+                                               LineHeight="22" />
+                                </StackPanel>
                             </StackPanel>
                         </components:GlassPanel>
 

@@ -100,6 +100,75 @@ namespace Lunex.Models
             set => SetField(ref _launchArguments, value);
         }
 
+        private string? _description;
+        [JsonPropertyName("description")]
+        public string? Description
+        {
+            get => _description;
+            set => SetField(ref _description, value);
+        }
+
+        private double _rating;
+        [JsonPropertyName("rating")]
+        public double Rating
+        {
+            get => _rating;
+            set => SetField(ref _rating, value);
+        }
+
+        private string? _releaseDate;
+        [JsonPropertyName("releaseDate")]
+        public string? ReleaseDate
+        {
+            get => _releaseDate;
+            set => SetField(ref _releaseDate, value);
+        }
+
+        private string? _developer;
+        [JsonPropertyName("developer")]
+        public string? Developer
+        {
+            get => _developer;
+            set => SetField(ref _developer, value);
+        }
+
+        private string? _publisher;
+        [JsonPropertyName("publisher")]
+        public string? Publisher
+        {
+            get => _publisher;
+            set => SetField(ref _publisher, value);
+        }
+
+        private string? _backgroundImagePath;
+        [JsonPropertyName("backgroundImagePath")]
+        public string? BackgroundImagePath
+        {
+            get => _backgroundImagePath;
+            set => SetField(ref _backgroundImagePath, value);
+        }
+
+        private int? _rawgId;
+        [JsonPropertyName("rawgId")]
+        public int? RawgId
+        {
+            get => _rawgId;
+            set => SetField(ref _rawgId, value);
+        }
+
+        private bool _hasCustomCover;
+        /// <summary>
+        /// True when the user has manually picked a cover image via the Customize dialog.
+        /// When set, automatic RAWG metadata syncs will NOT replace the cover.
+        /// Cleared back to false if the user removes their custom cover.
+        /// </summary>
+        [JsonPropertyName("hasCustomCover")]
+        public bool HasCustomCover
+        {
+            get => _hasCustomCover;
+            set => SetField(ref _hasCustomCover, value);
+        }
+
         // Transient state properties for UI feedback (ignored by serializer)
         private bool _isInstalling;
         [JsonIgnore]
@@ -199,7 +268,15 @@ namespace Lunex.Models
                 LaunchArguments = this.LaunchArguments,
                 IsInstalling = this.IsInstalling,
                 InstallProgress = this.InstallProgress,
-                IsHero = this.IsHero
+                IsHero = this.IsHero,
+                Description = this.Description,
+                Rating = this.Rating,
+                ReleaseDate = this.ReleaseDate,
+                Developer = this.Developer,
+                Publisher = this.Publisher,
+                BackgroundImagePath = this.BackgroundImagePath,
+                RawgId = this.RawgId,
+                HasCustomCover = this.HasCustomCover
             };
             if (this.SessionHistory != null)
             {
