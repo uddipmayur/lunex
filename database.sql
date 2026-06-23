@@ -1,4 +1,4 @@
--- Disable RLS for all tables implicitly by not adding it
+-- ##LUNEX DATABASE CREATION
 
 -- Create profiles table
 CREATE TABLE IF NOT EXISTS public.profiles (
