@@ -18,6 +18,7 @@ namespace Lunex.Views
         private bool _tempHasCustomCover; // tracks whether the pending cover is manually chosen
         private bool? _pendingDialogResult;
         private bool _isCloseAnimationCompleted = false;
+        private bool _isClosingAnimationStarted = false;
 
         public GameCustomizeDialog(Game game)
         {
@@ -29,6 +30,15 @@ namespace Lunex.Views
             _tempCoverPath = game.CoverPath;
             _tempIconPath = game.IconPath;
             _tempHasCustomCover = game.HasCustomCover;
+
+            bool isSupabaseAuth = !string.IsNullOrEmpty(Services.SettingsService.Instance.CloudAuthToken);
+            bool hasRawgKey = !string.IsNullOrWhiteSpace(Services.SettingsService.Instance.RawgApiKey);
+
+            if (!isSupabaseAuth || !hasRawgKey)
+            {
+                RawgSyncLabel.Visibility = Visibility.Collapsed;
+                TxtRawgId.Visibility = Visibility.Collapsed;
+            }
 
             UpdatePreviews();
         }
@@ -43,6 +53,7 @@ namespace Lunex.Views
 
         private void CloseWithAnimation(bool? result)
         {
+            if (_isClosingAnimationStarted) return;
             _pendingDialogResult = result;
             Close();
         }
@@ -52,6 +63,8 @@ namespace Lunex.Views
             if (!_isCloseAnimationCompleted)
             {
                 e.Cancel = true;
+                if (_isClosingAnimationStarted) return;
+                _isClosingAnimationStarted = true;
                 var sb = (System.Windows.Media.Animation.Storyboard)Resources["OnClosingStoryboard"];
                 if (sb != null)
                 {
@@ -192,7 +205,10 @@ namespace Lunex.Views
             // Save to service
             var libraryService = Services.LibraryService.Instance;
             
-            if (titleChanged || forceRawgSync)
+            bool isSupabaseAuth = !string.IsNullOrEmpty(Services.SettingsService.Instance.CloudAuthToken);
+            bool hasRawgKey = !string.IsNullOrWhiteSpace(Services.SettingsService.Instance.RawgApiKey);
+
+            if ((titleChanged || forceRawgSync) && isSupabaseAuth && hasRawgKey)
             {
                 System.Threading.Tasks.Task.Run(async () =>
                 {

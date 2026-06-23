@@ -7,10 +7,13 @@ using Lunex.Models;
 using Lunex.Services;
 using System.Text.Json;
 
+using System.Collections.Generic;
+
 namespace Lunex.ViewModels
 {
     public class ProfileViewModel : ViewModelBase
     {
+        private bool _avatarChanged = false;
 
         
         private readonly ProfileService _profileService;
@@ -44,6 +47,7 @@ namespace Lunex.ViewModels
             {
                 if (SetProperty(ref _dpPath, value))
                 {
+                    _avatarChanged = true;
                     OnPropertyChanged(nameof(HasDp));
                     OnPropertyChanged(nameof(AvatarVisibility));
                     OnPropertyChanged(nameof(FallbackVisibility));
@@ -104,31 +108,103 @@ namespace Lunex.ViewModels
                 System.Threading.Tasks.Task.Run(async () => await FetchSupabaseProfileAsync());
             }
 
-            SaveCommand = new RelayCommand(() =>
+            SaveCommand = new RelayCommand(async () =>
             {
+                IsBusy = true;
+
                 _profile.Username = Username;
                 _profile.Title = Title;
                 _profile.DpPath = DpPath;
                 _profileService.SaveProfile(_profile);
 
-                var dialog = new Views.ModernDialog("Save Profile", "Profile settings saved successfully.");
-                if (Application.Current?.MainWindow != null)
+                if (IsCloudLinked && !string.IsNullOrEmpty(SettingsService.Instance.CloudAuthToken))
                 {
-                    dialog.Owner = Application.Current.MainWindow;
+                    try
+                    {
+                        var supabase = SupabaseService.Client;
+                        var userResponse = await supabase.Auth.GetUser(SettingsService.Instance.CloudAuthToken);
+                        if (userResponse != null)
+                        {
+                            string uid = userResponse.Id;
+                            string? avatarUrl = null;
+
+                            if (_avatarChanged)
+                            {
+                                if (HasDp && DpPath != null)
+                                {
+                                    byte[] compressedBytes = ImageHelper.CompressAndResizeImage(DpPath);
+                                    string storagePath = $"{uid}/avatar.jpg";
+                                    
+                                    await supabase.Storage.From("avatars").Upload(
+                                        compressedBytes,
+                                        storagePath,
+                                        new Supabase.Storage.FileOptions { Upsert = true, ContentType = "image/jpeg" }
+                                    );
+                                    
+                                    avatarUrl = supabase.Storage.From("avatars").GetPublicUrl(storagePath);
+                                }
+                                else
+                                {
+                                    await supabase.Storage.From("avatars").Remove(new List<string> { $"{uid}/avatar.jpg" });
+                                }
+                            }
+
+                            var result = await supabase.From<Models.ProfileModel>().Select("*").Filter("id", Postgrest.Constants.Operator.Equals, uid).Get();
+                            var profileRow = result.Models.FirstOrDefault();
+                            
+                            if (profileRow != null)
+                            {
+                                profileRow.Username = Username;
+                                profileRow.Rank = Title;
+                                if (_avatarChanged)
+                                {
+                                    profileRow.AvatarUrl = avatarUrl;
+                                }
+                                profileRow.UpdatedAt = DateTime.UtcNow;
+                                await profileRow.Update<Models.ProfileModel>();
+                            }
+                            
+                            _avatarChanged = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to upload to cloud: {ex.Message}");
+                    }
                 }
-                dialog.ShowDialog();
+
+                IsBusy = false;
+
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    var dialog = new Views.ModernDialog("Save Profile", "Profile settings saved successfully.");
+                    if (Application.Current?.MainWindow != null)
+                    {
+                        dialog.Owner = Application.Current.MainWindow;
+                    }
+                    dialog.ShowDialog();
+                });
             });
 
             BrowseDecalCommand = new RelayCommand(() =>
             {
                 var dialog = new OpenFileDialog
                 {
-                    Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
+                    Filter = "Image Files (*.png;*.jpg;*.jpeg;*.webp)|*.png;*.jpg;*.jpeg;*.webp",
                     Title = "Select Profile Avatar"
                 };
                 if (dialog.ShowDialog() == true)
                 {
-                    DpPath = dialog.FileName;
+                    if (ImageHelper.VerifyImageMimeType(dialog.FileName))
+                    {
+                        DpPath = dialog.FileName;
+                    }
+                    else
+                    {
+                        var errDialog = new Views.ModernDialog("Invalid Image", "The selected file is not a valid image. Malware or corrupted files are blocked.");
+                        if (Application.Current?.MainWindow != null) errDialog.Owner = Application.Current.MainWindow;
+                        errDialog.ShowDialog();
+                    }
                 }
             });
 

@@ -175,6 +175,7 @@
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                                     <!-- PLAY / INSTALL Button -->
                                     <Button Command="{Binding PlayCommand}"
+                                            IsEnabled="{Binding IsNotBusy}"
                                             Style="{StaticResource PlayButtonStyle}">
                                         <StackPanel Orientation="Horizontal">
                                             <!-- Play/Hourglass vector -->
@@ -285,6 +286,7 @@
                                                  VerticalAlignment="Center"/>
                                         
                                         <Button Grid.Column="1" 
+                                                IsEnabled="{Binding IsNotBusy}" 
                                                 Command="{Binding SaveRawgApiKeyCommand}"
                                                 Style="{StaticResource GhostButtonStyle}"
                                                 Padding="20,10" Margin="12,0,0,0">
@@ -346,7 +348,8 @@
                             <components:GlassPanel Grid.Column="0" CornerRadius="12" Padding="20">
                                 <StackPanel Orientation="Vertical">
                                     <TextBlock Text="SYSTEM INTEGRATION" Foreground="{StaticResource OnSurfaceVariantBrushHigh}" FontSize="12" FontWeight="Bold"  Margin="0,0,0,16"/>
-                                    <Button Command="{Binding OpenDirectoryCommand}" Style="{StaticResource SystemIntegrationButtonStyle}">
+                                    <Button Command="{Binding OpenDirectoryCommand}" Style="{StaticResource SystemIntegrationButtonStyle}"
+                                            IsEnabled="{Binding IsNotBusy}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
@@ -368,6 +371,7 @@
 
                              <!-- Settings Gear Button -->
                              <Button Grid.Column="1" 
+                                     IsEnabled="{Binding IsNotBusy}" 
                                      Style="{StaticResource OrangeGearButtonStyle}"
                                      Width="52" Height="52"
                                      Margin="12,0,0,20"
@@ -405,6 +409,7 @@
                                               VerticalAlignment="Center"/>
                                      <!-- Save chevron disk -->
                                      <Button Grid.Column="1" 
+                                             IsEnabled="{Binding IsNotBusy}" 
                                              Command="{Binding SaveArgsCommand}" 
                                              Style="{StaticResource SaveArgsButtonStyle}"
                                              Margin="8,0,0,0"/>

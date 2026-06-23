@@ -228,7 +228,38 @@ namespace Lunex.Services
 
             try
             {
-                return await _httpClient.GetByteArrayAsync(imageUrl);
+                // Validate URL domain to prevent arbitrary downloads
+                if (Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri))
+                {
+                    var host = uri.Host.ToLowerInvariant();
+                    if (!host.EndsWith("rawg.io") && !host.EndsWith("rawg.media"))
+                    {
+                        Console.WriteLine($"[RAWG] Rejected image download from untrusted domain: {host}");
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+
+                // Check content length before downloading (10MB max)
+                const long MaxImageSize = 10 * 1024 * 1024;
+                using var headResponse = await _httpClient.SendAsync(
+                    new HttpRequestMessage(HttpMethod.Head, imageUrl), HttpCompletionOption.ResponseHeadersRead);
+                if (headResponse.Content.Headers.ContentLength > MaxImageSize)
+                {
+                    Console.WriteLine($"[RAWG] Image too large ({headResponse.Content.Headers.ContentLength} bytes), skipping: {imageUrl}");
+                    return null;
+                }
+
+                var data = await _httpClient.GetByteArrayAsync(imageUrl);
+                if (data.Length > MaxImageSize)
+                {
+                    Console.WriteLine($"[RAWG] Downloaded image exceeded max size ({data.Length} bytes), discarding.");
+                    return null;
+                }
+                return data;
             }
             catch (Exception ex)
             {

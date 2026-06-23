@@ -10,6 +10,7 @@ namespace Lunex.Views
         public bool RemoveSelected { get; private set; }
         private bool? _pendingDialogResult;
         private bool _isCloseAnimationCompleted = false;
+        private bool _isClosingAnimationStarted = false;
 
         public GameOptionsDialog(string gameTitle)
         {
@@ -27,6 +28,7 @@ namespace Lunex.Views
 
         private void CloseWithAnimation(bool? result)
         {
+            if (_isClosingAnimationStarted) return;
             _pendingDialogResult = result;
             Close();
         }
@@ -36,6 +38,8 @@ namespace Lunex.Views
             if (!_isCloseAnimationCompleted)
             {
                 e.Cancel = true;
+                if (_isClosingAnimationStarted) return;
+                _isClosingAnimationStarted = true;
                 var sb = (System.Windows.Media.Animation.Storyboard)Resources["OnClosingStoryboard"];
                 if (sb != null)
                 {

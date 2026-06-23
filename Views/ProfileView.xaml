@@ -112,20 +112,45 @@
                                              VerticalContentAlignment="Center" 
                                              Margin="0,0,12,0"/>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                        <Button Command="{Binding BrowseDecalCommand}" Content="BROWSE" Padding="16,0" Margin="0,0,8,0" Style="{StaticResource GhostButtonStyle}" Height="38"/>
-                                        <Button Command="{Binding ClearDecalCommand}" Content="CLEAR" Padding="16,0" Style="{StaticResource GhostButtonStyle}" Height="38" Visibility="{Binding AvatarVisibility}"/>
+                                        <Button Command="{Binding BrowseDecalCommand}" Content="BROWSE" Padding="16,0" Margin="0,0,8,0" Style="{StaticResource GhostButtonStyle}" Height="38" IsEnabled="{Binding IsNotBusy}"/>
+                                        <Button Command="{Binding ClearDecalCommand}" Content="CLEAR" Padding="16,0" Style="{StaticResource GhostButtonStyle}" Height="38" Visibility="{Binding AvatarVisibility}" IsEnabled="{Binding IsNotBusy}"/>
                                     </StackPanel>
                                 </Grid>
 
                                 <!-- Neon Save button -->
                                 <Button Command="{Binding SaveCommand}" Padding="24,12"
-                                        Style="{StaticResource NeonButtonStyle}">
-                                    <TextBlock Text="SAVE PROFILE" FontSize="13" FontWeight="Bold" />
+                                        Style="{StaticResource NeonButtonStyle}"
+                                        IsEnabled="{Binding IsNotBusy}">
+                                    <Grid>
+                                        <TextBlock Text="SAVE PROFILE" FontSize="13" FontWeight="Bold" 
+                                                   Visibility="{Binding IsNotBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        
+                                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}">
+                                            <Path Data="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" 
+                                                  Stroke="White" StrokeThickness="2" StrokeEndLineCap="Round" StrokeStartLineCap="Round"
+                                                  Width="14" Height="14" Margin="0,0,8,0" RenderTransformOrigin="0.5,0.5">
+                                                <Path.RenderTransform>
+                                                    <RotateTransform/>
+                                                </Path.RenderTransform>
+                                                <Path.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="0" To="360" Duration="0:0:1" RepeatBehavior="Forever"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Path.Triggers>
+                                            </Path>
+                                            <TextBlock Text="SAVING..." FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </Button>
                                 
                                 <Button Command="{Binding LinkCloudCommand}" Padding="24,12" Margin="0,16,0,0"
                                         Style="{StaticResource GhostButtonStyle}"
-                                        Visibility="{Binding IsNotCloudLinked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}">
+                                        Visibility="{Binding IsNotCloudLinked, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Visible}"
+                                        IsEnabled="{Binding IsNotBusy}">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Path Data="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" 
                                               Fill="{StaticResource PrimaryBrush}" Width="16" Height="16" Stretch="Uniform" Margin="0,0,8,0" VerticalAlignment="Center"/>
@@ -147,7 +172,7 @@
                                             <TextBlock Text="CLOUD CONNECTED" FontSize="13" FontWeight="Bold" Foreground="#4ade80" VerticalAlignment="Center"/>
                                         </StackPanel>
                                         
-                                        <Button Grid.Column="1" Command="{Binding LogoutCloudCommand}" Padding="16,6" Style="{StaticResource GhostButtonStyle}" Background="#11ff4b2b" BorderBrush="#22ff4b2b">
+                                        <Button Grid.Column="1" Command="{Binding LogoutCloudCommand}" Padding="16,6" Style="{StaticResource GhostButtonStyle}" Background="#11ff4b2b" BorderBrush="#22ff4b2b" IsEnabled="{Binding IsNotBusy}">
                                             <TextBlock Text="LOG OUT" FontSize="11" FontWeight="Bold" Foreground="#ff4b2b"/>
                                         </Button>
                                     </Grid>

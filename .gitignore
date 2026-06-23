@@ -50,6 +50,7 @@ website/
 #Others
 
 client_secret.json
+supabase_keys_backup.txt
 *.ps1
 *.pfx
 *.iss

@@ -44,6 +44,8 @@ dotnet run
 
 That's it. No database setup, no environment variables, no external config files. On first launch, Lunex creates its data files automatically under `%APPDATA%\Lunex`.
 
+> **Note:** Enter your own supabase creds in `UpdateService.cs` and `SupabaseService.cs` if you want to make your own build.
+
 > **Note:** `dotnet run` builds and starts the debug build. For a proper self-contained release build, see the Packaging section below.
 
 ---
@@ -128,7 +130,7 @@ This compiles a self-contained `win-x64` release build.
 
 **Local data** — All game libraries, profiles, and settings stay on-device in `%APPDATA%\Lunex`. Nothing user-specific is committed.
 
-**API credentials** — The Supabase key in `UpdateService.cs` is a public `anon` role key. It is intentionally client-facing and safe to commit. Do not replace it with a `service_role` or admin key. Never commit private secrets.
+**API credentials** — Enter your own supabase creds in `UpdateService.cs` and `SupabaseService.cs` if you want to make your own build. Never commit private secrets.
 
 ---
 

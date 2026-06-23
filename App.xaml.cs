@@ -142,10 +142,11 @@ namespace Lunex
 
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            // Show the full exception chain — XamlParseException wraps the real cause in InnerException
+            LogCrash("UI", e.Exception);
             MessageBox.Show(
-                $"Unhandled UI Exception:\n\n{e.Exception}",
-                "Lunex - Crash",
+                "An unexpected error occurred. Details have been saved to the crash log.\n\n" +
+                "If this keeps happening, please report it with the crash log file.",
+                "Lunex — Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             e.Handled = true;
@@ -154,11 +155,27 @@ namespace Lunex
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var ex = e.ExceptionObject as Exception;
+            LogCrash("Fatal", ex);
             MessageBox.Show(
-                $"Fatal Exception:\n\n{ex?.GetType().Name}: {ex?.Message}\n\nStack Trace:\n{ex?.StackTrace}",
-                "Lunex - Fatal Crash",
+                "A fatal error occurred and Lunex needs to close.\n\n" +
+                "Details have been saved to the crash log. Please report this issue.",
+                "Lunex — Fatal Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
+        }
+
+        private static void LogCrash(string category, Exception? ex)
+        {
+            try
+            {
+                var logDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Lunex");
+                if (!System.IO.Directory.Exists(logDir))
+                    System.IO.Directory.CreateDirectory(logDir);
+                var logPath = System.IO.Path.Combine(logDir, "crash_log.txt");
+                var entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{category}] {ex?.GetType().Name}: {ex?.Message}\n{ex?.StackTrace}\n{new string('-', 80)}\n";
+                System.IO.File.AppendAllText(logPath, entry);
+            }
+            catch { /* logging must never throw */ }
         }
 
         private void OnForceUpdateRequired()

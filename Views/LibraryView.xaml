@@ -200,6 +200,7 @@
             <TextBlock Text="YOUR LIBRARY IS EMPTY" Foreground="{StaticResource PrimaryBrush}" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,24,0,0" />
             <TextBlock Text="Integrate custom applications directly into Lunex." Foreground="#B3C7C4D8" FontSize="14" HorizontalAlignment="Center" Margin="0,8,0,24" TextAlignment="Center" MaxWidth="380"/>
             <Button Command="{Binding AddGameCommand}" Padding="24,12" HorizontalAlignment="Center"
+                    IsEnabled="{Binding IsNotBusy}"
                     Style="{StaticResource NeonButtonStyle}">
                 <TextBlock Text="ADD YOUR FIRST GAME" FontSize="13" FontWeight="Bold" />
             </Button>

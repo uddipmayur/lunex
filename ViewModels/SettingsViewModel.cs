@@ -91,6 +91,7 @@ namespace Lunex.ViewModels
             ClearCommand = new RelayCommand(_ => ExecuteClear());
             CheckForUpdatesCommand = new RelayCommand(async (_) =>
             {
+                IsBusy = true;
                 bool alreadyLatest = await UpdateService.Instance.CheckForUpdateManuallyAsync();
                 if (alreadyLatest)
                 {
@@ -107,6 +108,7 @@ namespace Lunex.ViewModels
                         UpdateCheckFailed?.Invoke(UpdateService.Instance.StatusText);
                     }
                 }
+                IsBusy = false;
             });
             InstallUpdateCommand = new RelayCommand(_ =>
             {
@@ -117,6 +119,7 @@ namespace Lunex.ViewModels
             OpenTermsOfServiceCommand = new RelayCommand(() => OpenUrl("https://lunex.nexusrealm.in/terms-of-service"));
             SaveRawgApiKeyCommand = new RelayCommand(async () =>
             {
+                IsBusy = true;
                 var token = SettingsService.Instance.CloudAuthToken;
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -147,6 +150,7 @@ namespace Lunex.ViewModels
                     dialog.Owner = Application.Current.MainWindow;
                 }
                 dialog.ShowDialog();
+                IsBusy = false;
             });
 
             // Forward PropertyChanged from SettingsService to view bindings

@@ -3,6 +3,8 @@ using System.IO;
 using System.Text.Json;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Lunex.Services
 {
@@ -11,10 +13,54 @@ namespace Lunex.Services
         public bool LaunchAtStartup { get; set; } = true;
         public bool MinimizeToTray { get; set; } = false;
         public bool DefaultsUpgraded { get; set; } = false;
+        /// <summary>Stored encrypted via DPAPI (Base64-encoded ciphertext).</summary>
         public string? CloudAuthToken { get; set; }
+        /// <summary>Stored encrypted via DPAPI (Base64-encoded ciphertext).</summary>
         public string? CloudRefreshToken { get; set; }
         public bool SkipLoginOnStartup { get; set; } = false;
         public string? RawgApiKey { get; set; }
+    }
+
+    /// <summary>
+    /// Helpers to encrypt/decrypt strings using Windows DPAPI (CurrentUser scope).
+    /// Tokens are stored as Base64-encoded ciphertext in the JSON settings file.
+    /// If decryption fails (e.g. old plaintext value), the raw string is returned
+    /// and will be re-encrypted on the next save.
+    /// </summary>
+    internal static class TokenProtection
+    {
+        internal static string? Encrypt(string? plaintext)
+        {
+            if (string.IsNullOrEmpty(plaintext)) return plaintext;
+            try
+            {
+                var plainBytes = Encoding.UTF8.GetBytes(plaintext);
+                var cipherBytes = ProtectedData.Protect(plainBytes, null, DataProtectionScope.CurrentUser);
+                return Convert.ToBase64String(cipherBytes);
+            }
+            catch
+            {
+                // If DPAPI fails (e.g. non-Windows), store as-is
+                return plaintext;
+            }
+        }
+
+        internal static string? Decrypt(string? ciphertext)
+        {
+            if (string.IsNullOrEmpty(ciphertext)) return ciphertext;
+            try
+            {
+                var cipherBytes = Convert.FromBase64String(ciphertext);
+                var plainBytes = ProtectedData.Unprotect(cipherBytes, null, DataProtectionScope.CurrentUser);
+                return Encoding.UTF8.GetString(plainBytes);
+            }
+            catch
+            {
+                // Decryption failed — likely an old plaintext value or different user.
+                // Return as-is; it will be re-encrypted on next save.
+                return ciphertext;
+            }
+        }
     }
 
     public class SettingsService : INotifyPropertyChanged
@@ -121,12 +167,13 @@ namespace Lunex.Services
 
         public string? CloudAuthToken
         {
-            get => _data.CloudAuthToken;
+            get => TokenProtection.Decrypt(_data.CloudAuthToken);
             set
             {
-                if (_data.CloudAuthToken != value)
+                var encrypted = TokenProtection.Encrypt(value);
+                if (_data.CloudAuthToken != encrypted)
                 {
-                    _data.CloudAuthToken = value;
+                    _data.CloudAuthToken = encrypted;
                     OnPropertyChanged();
                     SaveSettings();
                 }
@@ -135,12 +182,13 @@ namespace Lunex.Services
 
         public string? CloudRefreshToken
         {
-            get => _data.CloudRefreshToken;
+            get => TokenProtection.Decrypt(_data.CloudRefreshToken);
             set
             {
-                if (_data.CloudRefreshToken != value)
+                var encrypted = TokenProtection.Encrypt(value);
+                if (_data.CloudRefreshToken != encrypted)
                 {
-                    _data.CloudRefreshToken = value;
+                    _data.CloudRefreshToken = encrypted;
                     SaveSettings();
                 }
             }

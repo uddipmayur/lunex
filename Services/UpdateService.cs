@@ -27,17 +27,20 @@ namespace Lunex.Services
 
         [JsonPropertyName("bug_fixes")]
         public string? BugFixes { get; set; }
+
+        [JsonPropertyName("sha256_hash")]
+        public string? Sha256Hash { get; set; }
     }
 
     public class UpdateService : INotifyPropertyChanged
     {
         // Supabase credentials - do not commit admin keys here you absolute donuts
-        private const string SupabaseUrl = "https://qhihazzhrtiiwphtinpj.supabase.co";
-        private const string SupabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWhhenpocnRpaXdwaHRpbnBqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTMxOTEsImV4cCI6MjA5NzY2OTE5MX0.xgNLwwsZG7U6hevffRXfnHkYsufDrcrS9VUuANRtoYw";
+        private const string SupabaseUrl = "ENTER YOUR KEY";
+        private const string SupabaseAnonKey = "ENTER YOUR KEY";
 
         private const string TableEndpoint = "/rest/v1/app_updates?select=*&order=id.desc&limit=1";
 
-        public const string CurrentVersion = "7.6.3";
+        public const string CurrentVersion = "7.6.5";
 
         // Single instance of updater so we don't spam database connections
         private static readonly Lazy<UpdateService> _instance = new(() => new UpdateService());
@@ -53,7 +56,7 @@ namespace Lunex.Services
 
                 // DO NOT FUCKING TOUCH THIS OR DOH RESOLVER BYPASS BREAKS!
                 // Some users' ISPs block Supabase domains, so if standard DNS lookup fails, we fall back to Google DoH (8.8.8.8)
-                if (host.Equals("qhihazzhrtiiwphtinpj.supabase.co", StringComparison.OrdinalIgnoreCase))
+                if (host.Equals("ENTER YOUR KEY", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -134,6 +137,7 @@ namespace Lunex.Services
         private string _statusText = string.Empty;
         private string? _downloadedInstallerPath;
         private CancellationTokenSource? _downloadCts;
+        private string? _expectedHash; // SHA-256 hash from the update server
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public event Action? ForceUpdateRequired;
@@ -235,7 +239,7 @@ namespace Lunex.Services
                 {
                     UpdateAvailable = true;
 
-                    if (await IsInstallerValidAsync(destPath, info.Version, info.DownloadUrl).ConfigureAwait(false))
+                    if (await IsInstallerValidAsync(destPath, info.Version, info.DownloadUrl, info.Sha256Hash).ConfigureAwait(false))
                     {
                         _downloadedInstallerPath = destPath;
                         UpdateDownloaded = true;
@@ -248,6 +252,7 @@ namespace Lunex.Services
                         UpdateDownloaded = false;
 
                         // Silent background download
+                        _expectedHash = info.Sha256Hash;
                         await DownloadUpdateAsync(info.DownloadUrl).ConfigureAwait(false);
                     }
                 }
@@ -301,7 +306,7 @@ namespace Lunex.Services
                 {
                     UpdateAvailable = true;
 
-                    if (await IsInstallerValidAsync(destPath, info.Version, info.DownloadUrl).ConfigureAwait(false))
+                    if (await IsInstallerValidAsync(destPath, info.Version, info.DownloadUrl, info.Sha256Hash).ConfigureAwait(false))
                     {
                         _downloadedInstallerPath = destPath;
                         UpdateDownloaded = true;
@@ -312,6 +317,7 @@ namespace Lunex.Services
                         try { if (File.Exists(destPath)) File.Delete(destPath); } catch { }
                         UpdateDownloaded = false;
                         StatusText = $"Update available: v{info.Version}";
+                        _expectedHash = info.Sha256Hash;
                         _ = Task.Run(() => DownloadUpdateAsync(info.DownloadUrl));
                     }
                     return false;
@@ -451,6 +457,21 @@ namespace Lunex.Services
                 // rename the temp file to the final destination path
                 File.Move(tempFilePath, destPath);
 
+                // SHA-256 integrity check — reject if hash doesn't match
+                if (!string.IsNullOrEmpty(_expectedHash))
+                {
+                    var actualHash = ComputeFileSha256(destPath);
+                    if (!string.Equals(actualHash, _expectedHash, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine($"[UpdateService] SHA-256 mismatch! Expected: {_expectedHash}, Got: {actualHash}");
+                        try { File.Delete(destPath); } catch { }
+                        StatusText = "Download failed: integrity check failed.";
+                        UpdateDownloaded = false;
+                        return;
+                    }
+                    Console.WriteLine($"[UpdateService] SHA-256 verified: {actualHash}");
+                }
+
                 _downloadedInstallerPath = destPath;
                 UpdateDownloaded = true;
                 DownloadProgress = 100;
@@ -542,7 +563,7 @@ namespace Lunex.Services
             }
         }
 
-        private async Task<bool> IsInstallerValidAsync(string filePath, string targetVersion, string downloadUrl)
+        private async Task<bool> IsInstallerValidAsync(string filePath, string targetVersion, string downloadUrl, string? expectedHash = null)
         {
             if (!File.Exists(filePath)) return false;
 
@@ -570,7 +591,27 @@ namespace Lunex.Services
                 return false;
             }
 
+            // 4. SHA-256 hash verification
+            if (!string.IsNullOrEmpty(expectedHash))
+            {
+                var actualHash = ComputeFileSha256(filePath);
+                if (!string.Equals(actualHash, expectedHash, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"[UpdateService] SHA-256 mismatch on cached installer. Expected: {expectedHash}, Got: {actualHash}");
+                    return false;
+                }
+            }
+
             return true;
+        }
+
+        /// <summary>Computes the SHA-256 hash of a file and returns it as a lowercase hex string.</summary>
+        private static string ComputeFileSha256(string filePath)
+        {
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var hashBytes = sha.ComputeHash(fs);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
 
         private bool IsInstallerForVersion(string filePath, string targetVersion)
@@ -644,6 +685,11 @@ namespace Lunex.Services
             return -1L;
         }
 
+        /// <summary>
+        /// Checks for a cached installer in the temp folder that is newer than the current version,
+        /// and verifies its SHA-256 hash against the update server before returning it.
+        /// Returns null if no valid, hash-verified installer is found.
+        /// </summary>
         public static string? GetPendingUpdateInstaller()
         {
             try
@@ -653,24 +699,50 @@ namespace Lunex.Services
 
                 foreach (var file in Directory.GetFiles(tempDir, "*.exe"))
                 {
-                    if (IsValidPeFile(file))
-                    {
-                        var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(file);
-                        var fileVersion = versionInfo.FileVersion?.Trim();
-                        var prodVersion = versionInfo.ProductVersion?.Trim();
-                        
-                        string? versionToCompare = null;
-                        if (!string.IsNullOrEmpty(prodVersion)) versionToCompare = prodVersion;
-                        else if (!string.IsNullOrEmpty(fileVersion)) versionToCompare = fileVersion;
+                    if (!IsValidPeFile(file)) continue;
 
-                        if (versionToCompare != null)
+                    var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(file);
+                    var fileVersion = versionInfo.FileVersion?.Trim();
+                    var prodVersion = versionInfo.ProductVersion?.Trim();
+
+                    string? versionToCompare = null;
+                    if (!string.IsNullOrEmpty(prodVersion)) versionToCompare = prodVersion;
+                    else if (!string.IsNullOrEmpty(fileVersion)) versionToCompare = fileVersion;
+
+                    if (versionToCompare == null) continue;
+
+                    var cleanVersion = CleanVersionString(versionToCompare);
+                    if (!IsNewerVersion(cleanVersion, CurrentVersion)) continue;
+
+                    // Fetch the expected hash from Supabase to verify this cached file hasn't been tampered with.
+                    // This is a synchronous call on startup — use a short timeout so we don't block startup.
+                    try
+                    {
+                        var updateInfo = FetchLatestUpdateInfoSync();
+                        if (updateInfo == null)
                         {
-                            var cleanVersion = CleanVersionString(versionToCompare);
-                            if (IsNewerVersion(cleanVersion, CurrentVersion))
-                            {
-                                return file;
-                            }
+                            Console.WriteLine("[UpdateService] Cannot verify pending installer: update server unreachable. Skipping auto-install.");
+                            return null;
                         }
+
+                        if (!string.IsNullOrEmpty(updateInfo.Sha256Hash))
+                        {
+                            var actualHash = ComputeFileSha256(file);
+                            if (!string.Equals(actualHash, updateInfo.Sha256Hash, StringComparison.OrdinalIgnoreCase))
+                            {
+                                Console.WriteLine($"[UpdateService] Pending installer failed SHA-256 check. Expected: {updateInfo.Sha256Hash}, Got: {actualHash}. Deleting.");
+                                try { File.Delete(file); } catch { }
+                                return null;
+                            }
+                            Console.WriteLine($"[UpdateService] Pending installer SHA-256 verified: {actualHash}");
+                        }
+
+                        return file;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[UpdateService] Hash verification for pending installer failed: {ex.Message}. Skipping auto-install.");
+                        return null;
                     }
                 }
             }
@@ -679,6 +751,34 @@ namespace Lunex.Services
                 Console.WriteLine($"[UpdateService] Error checking for pending update: {ex.Message}");
             }
             return null;
+        }
+
+        /// <summary>
+        /// Synchronous wrapper around FetchLatestUpdateInfoAsync for use in OnStartup (before async infrastructure is ready).
+        /// Uses a tight timeout to avoid blocking app startup.
+        /// </summary>
+        private static UpdateInfo? FetchLatestUpdateInfoSync()
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+                return Task.Run(async () =>
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Get, SupabaseUrl + TableEndpoint);
+                    request.Headers.Add("apikey", SupabaseAnonKey);
+                    request.Headers.Add("Authorization", $"Bearer {SupabaseAnonKey}");
+                    request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                    using var response = await _http.SendAsync(request, cts.Token).ConfigureAwait(false);
+                    if (!response.IsSuccessStatusCode) return null;
+                    var json = await response.Content.ReadAsStringAsync(cts.Token).ConfigureAwait(false);
+                    var list = JsonSerializer.Deserialize<UpdateInfo[]>(json);
+                    return list != null && list.Length > 0 ? list[0] : null;
+                }, cts.Token).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static string CleanVersionString(string version)

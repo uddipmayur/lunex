@@ -176,7 +176,8 @@ namespace Lunex.ViewModels
 
             SaveRawgApiKeyCommand = new RelayCommand(async () =>
             {
-                if (string.IsNullOrWhiteSpace(RawgApiKeyInput)) return;
+                IsBusy = true;
+                if (string.IsNullOrWhiteSpace(RawgApiKeyInput)) { IsBusy = false; return; }
                 
                 SettingsService.Instance.RawgApiKey = RawgApiKeyInput.Trim();
                 OnPropertyChanged(nameof(HasRawgApiKey));
@@ -186,7 +187,7 @@ namespace Lunex.ViewModels
                 var token = SettingsService.Instance.CloudAuthToken;
                 if (!string.IsNullOrEmpty(token))
                 {
-                    System.Threading.Tasks.Task.Run(async () =>
+                    await System.Threading.Tasks.Task.Run(async () =>
                     {
                         try
                         {
@@ -206,6 +207,7 @@ namespace Lunex.ViewModels
                         catch { }
                     });
                 }
+                IsBusy = false;
             });
 
             // Calculate real activity factor heights
@@ -369,6 +371,7 @@ namespace Lunex.ViewModels
         {
             IsInstalling = true;
             InstallProgress = 0;
+            IsBusy = true;
             System.Threading.Tasks.Task.Run(async () =>
             {
                 try
@@ -396,6 +399,7 @@ namespace Lunex.ViewModels
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         IsInstalling = false;
+                        IsBusy = false;
                         OnPropertyChanged(nameof(IsInstalled));
                         OnPropertyChanged(nameof(StatusText));
                         _libraryService.UpdateGame(_game);
@@ -407,6 +411,7 @@ namespace Lunex.ViewModels
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         IsInstalling = false;
+                        IsBusy = false;
                     });
                 }
             });

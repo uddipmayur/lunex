@@ -10,6 +10,16 @@ namespace Lunex.Services
         private static readonly Lazy<CloudSyncService> _instance = new(() => new CloudSyncService());
         public static CloudSyncService Instance => _instance.Value;
 
+        // Debounce: sync at most once every 30 seconds to prevent DB write spam
+        private const int SyncDebounceSeconds = 30;
+        private DateTime _lastSyncTime = DateTime.MinValue;
+        private System.Threading.Timer? _debounceTimer;
+        private Game? _pendingGame;
+        private readonly object _syncLock = new();
+
+        // Max reasonable playtime increase per sync (24 hours)
+        private const int MaxPlaytimeIncreasePerSync = 1440;
+
         private CloudSyncService()
         {
         }
@@ -98,8 +108,46 @@ namespace Lunex.Services
 
         private void OnGameUpdated(Game game)
         {
-            // Run asynchronously so we don't block the UI or local save thread
-            Task.Run(async () => await SyncGameplayDataAsync(game));
+            lock (_syncLock)
+            {
+                _pendingGame = game;
+
+                var elapsed = (DateTime.Now - _lastSyncTime).TotalSeconds;
+                if (elapsed >= SyncDebounceSeconds)
+                {
+                    // Enough time has passed, sync immediately
+                    _pendingGame = null;
+                    _lastSyncTime = DateTime.Now;
+                    _debounceTimer?.Dispose();
+                    _debounceTimer = null;
+                    Task.Run(async () => await SyncGameplayDataAsync(game));
+                }
+                else if (_debounceTimer == null)
+                {
+                    // Schedule a deferred sync after the remaining cooldown
+                    var delayMs = (int)((SyncDebounceSeconds - elapsed) * 1000);
+                    _debounceTimer = new System.Threading.Timer(_ => FlushPendingSync(), null, delayMs, System.Threading.Timeout.Infinite);
+                }
+                // If timer is already scheduled, _pendingGame is updated — timer will pick up the latest state
+            }
+        }
+
+        private void FlushPendingSync()
+        {
+            Game? gameToSync;
+            lock (_syncLock)
+            {
+                gameToSync = _pendingGame;
+                _pendingGame = null;
+                _debounceTimer?.Dispose();
+                _debounceTimer = null;
+                _lastSyncTime = DateTime.Now;
+            }
+
+            if (gameToSync != null)
+            {
+                Task.Run(async () => await SyncGameplayDataAsync(gameToSync));
+            }
         }
 
         private async Task SyncGameplayDataAsync(Game game)

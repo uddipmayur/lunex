@@ -9,6 +9,20 @@ namespace Lunex.ViewModels
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (SetProperty(ref _isBusy, value))
+                {
+                    OnPropertyChanged(nameof(IsNotBusy));
+                }
+            }
+        }
+        public bool IsNotBusy => !IsBusy;
+
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -27,6 +41,7 @@ namespace Lunex.ViewModels
     {
         private readonly Func<object?, Task> _execute;
         private readonly Func<object?, bool>? _canExecute;
+        private bool _isExecuting;
 
         public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
         {
@@ -54,12 +69,21 @@ namespace Lunex.ViewModels
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
+        public bool CanExecute(object? parameter)
+        {
+            if (_isExecuting) return false;
+            return _canExecute?.Invoke(parameter) ?? true;
+        }
 
         public void Execute(object? parameter) => ExecuteAsync(parameter);
 
         private async void ExecuteAsync(object? parameter)
         {
+            if (_isExecuting) return;
+
+            _isExecuting = true;
+            CommandManager.InvalidateRequerySuggested();
+
             try
             {
                 await _execute(parameter);
@@ -67,6 +91,11 @@ namespace Lunex.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine($"[RelayCommand] Unhandled exception: {ex.Message}");
+            }
+            finally
+            {
+                _isExecuting = false;
+                CommandManager.InvalidateRequerySuggested();
             }
         }
     }

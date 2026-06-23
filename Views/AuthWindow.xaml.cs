@@ -17,6 +17,10 @@ namespace Lunex.Views
         private bool _isSignUpMode = false;
         private bool _isPasswordVisible = false;
         private bool _isConfirmPasswordVisible = false;
+        private int _failedAttempts = 0;
+        private DateTime _lastAttempt = DateTime.MinValue;
+        // CSRF protection: random state token generated per OAuth attempt
+        private string? _oauthState;
         
         // Strikethrough eye icon path data
         private const string EyeOffPath = "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z";
@@ -28,6 +32,14 @@ namespace Lunex.Views
             InitializeComponent();
             
             _supabase = SupabaseService.Client;
+        }
+
+        private void SetBusyState(bool isBusy)
+        {
+            LoginButton.IsEnabled = !isBusy;
+            GoogleButton.IsEnabled = !isBusy;
+            ToggleModeButton.IsEnabled = !isBusy;
+            ForgotButton.IsEnabled = !isBusy;
         }
 
         private void ToggleMode_Click(object sender, RoutedEventArgs e)
@@ -80,7 +92,20 @@ namespace Lunex.Views
 
             try
             {
-                LoginButton.IsEnabled = false;
+                // Rate limiting — exponential backoff after failed attempts
+                if (_failedAttempts > 0)
+                {
+                    var cooldownSeconds = Math.Min(30, Math.Pow(2, _failedAttempts));
+                    var elapsed = (DateTime.Now - _lastAttempt).TotalSeconds;
+                    if (elapsed < cooldownSeconds)
+                    {
+                        ShowError($"Too many attempts. Please wait {(int)(cooldownSeconds - elapsed)} seconds.");
+                        return;
+                    }
+                }
+                _lastAttempt = DateTime.Now;
+
+                SetBusyState(true);
                 LoginButton.Content = "Authenticating...";
                 StatusMessage.Visibility = Visibility.Collapsed;
 
@@ -89,6 +114,11 @@ namespace Lunex.Views
                     if (string.IsNullOrEmpty(username))
                     {
                         ShowError("Please enter a username.");
+                        return;
+                    }
+                    if (password.Length < 8)
+                    {
+                        ShowError("Password must be at least 8 characters.");
                         return;
                     }
                     if (password != confirmPassword)
@@ -101,6 +131,7 @@ namespace Lunex.Views
                     var signUpSession = await _supabase.Auth.SignUp(email, password);
                     if (signUpSession != null)
                     {
+                        _failedAttempts = 0; // Reset on success
                         SettingsService.Instance.CloudAuthToken = signUpSession.AccessToken ?? "";
                         SettingsService.Instance.CloudRefreshToken = signUpSession.RefreshToken ?? "";
                         // Save username mapping via profile service or DB later
@@ -118,6 +149,7 @@ namespace Lunex.Views
                     var session = await _supabase.Auth.SignIn(email, password);
                     if (session != null && session.AccessToken != null)
                     {
+                        _failedAttempts = 0; // Reset on success
                         SettingsService.Instance.CloudAuthToken = session.AccessToken;
                         SettingsService.Instance.CloudRefreshToken = session.RefreshToken ?? "";
                         this.DialogResult = true;
@@ -131,12 +163,13 @@ namespace Lunex.Views
             }
             catch (Exception ex)
             {
+                _failedAttempts++;
                 string parsedMessage = ParseSupabaseError(ex.Message, _isSignUpMode);
                 ShowError(parsedMessage);
             }
             finally
             {
-                LoginButton.IsEnabled = true;
+                SetBusyState(false);
                 LoginButton.Content = _isSignUpMode ? "Create Account ➔" : "Log In ➔";
             }
         }
@@ -234,8 +267,7 @@ namespace Lunex.Views
         {
             try
             {
-                LoginButton.IsEnabled = false;
-                GoogleButton.IsEnabled = false;
+                SetBusyState(true);
                 ShowError("Opening browser for Google Auth...");
 
                 await HandleGoogleAuthAsync();
@@ -246,8 +278,7 @@ namespace Lunex.Views
             }
             finally
             {
-                LoginButton.IsEnabled = true;
-                GoogleButton.IsEnabled = true;
+                SetBusyState(false);
                 if (StatusMessage.Text.StartsWith("Opening browser"))
                 {
                     StatusMessage.Visibility = Visibility.Collapsed;
@@ -258,7 +289,11 @@ namespace Lunex.Views
         private async Task HandleGoogleAuthAsync()
         {
             var redirectUrl = "http://127.0.0.1:54321/";
-            
+
+            // Generate a cryptographically random state token for CSRF protection
+            _oauthState = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
+                .Replace("+", "-").Replace("/", "_").TrimEnd('=');
+
             using var listener = new HttpListener();
             listener.Prefixes.Add(redirectUrl);
             listener.Start();
@@ -398,7 +433,7 @@ namespace Lunex.Views
             <svg viewBox=""0 0 24 24""><line x1=""18"" y1=""6"" x2=""6"" y2=""18""></line><line x1=""6"" y1=""6"" x2=""18"" y2=""18""></line></svg>
         </div>
         <h2>Authentication Failed</h2>
-        <p>{ex.Message}</p>
+        <p>{System.Net.WebUtility.HtmlEncode(ex.Message)}</p>
     </div>
 </body>
 </html>";

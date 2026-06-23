@@ -181,6 +181,7 @@ namespace Lunex.ViewModels
 
         private async void ExecuteAddGame()
         {
+            IsBusy = true;
             // Open standard Win32 File Dialog to select exe
             var dialog = new OpenFileDialog
             {
@@ -238,6 +239,7 @@ namespace Lunex.ViewModels
                     Console.WriteLine($"Error fetching RAWG details: {ex.Message}");
                 }
             }
+            IsBusy = false;
         }
     }
 }

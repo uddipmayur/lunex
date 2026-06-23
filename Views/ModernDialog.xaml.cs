@@ -8,6 +8,7 @@ namespace Lunex.Views
         public bool Result { get; set; } = false;
         private bool? _pendingDialogResult;
         private bool _isCloseAnimationCompleted = false;
+        private bool _isClosingAnimationStarted = false;
 
         public ModernDialog(string title, string message, bool isConfirmation = false)
         {
@@ -37,6 +38,7 @@ namespace Lunex.Views
 
         private void CloseWithAnimation(bool? result)
         {
+            if (_isClosingAnimationStarted) return;
             _pendingDialogResult = result;
             Close();
         }
@@ -46,6 +48,8 @@ namespace Lunex.Views
             if (!_isCloseAnimationCompleted)
             {
                 e.Cancel = true;
+                if (_isClosingAnimationStarted) return;
+                _isClosingAnimationStarted = true;
                 var sb = (System.Windows.Media.Animation.Storyboard)Resources["OnClosingStoryboard"];
                 if (sb != null)
                 {
