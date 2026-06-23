@@ -41,8 +41,7 @@ git clone https://github.com/uddipmayur/lunex.git
 cd lunex
 dotnet run
 ```
-
-That's it. No database setup, no environment variables, no external config files. On first launch, Lunex creates its data files automatically under `%APPDATA%\Lunex`.
+Lunex creates its data files automatically under `%APPDATA%\Lunex`.
 
 > **Note:** Enter your own supabase creds in `UpdateService.cs` and `SupabaseService.cs` if you want to make your own build.
 
