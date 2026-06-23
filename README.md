@@ -21,7 +21,7 @@ A personal game library hub and media dashboard for Windows. Lunex keeps your ga
 
 ## Screenshots
 
-| Library | Stats |
+| Music | Stats |
 |---|---|
 | ![Music view](assets/screenshots/music.png) | ![Stats view](assets/screenshots/stats.png) |
 
